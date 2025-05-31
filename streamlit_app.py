@@ -8,8 +8,15 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
 import bedrock
+
+# Data
+BASE_DIR = os.path.dirname(__file__)
+SYSTEM_PROMPT_PATH = os.path.normpath(
+    os.path.join(BASE_DIR, "data/system_prompt.md")
+)
+with open(SYSTEM_PROMPT_PATH) as f:
+    system_prompt = f.read()
 
 # Files
 logo = Image.open("static/images/logo.png")
@@ -45,10 +52,12 @@ if user_question := st.chat_input(
 
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": user_question})
-    messages = [] + st.session_state.messages
+
+    # Build message list including system prompt
+    all_messages = [{"role": "system", "content": system_prompt}] + st.session_state.messages
 
     with st.chat_message("assistant"):
-        response = bedrock.invoke_bedrock(messages)
+        response = bedrock.invoke_bedrock(all_messages)
     st.markdown(response)
 
     # Add assistant response to chat history

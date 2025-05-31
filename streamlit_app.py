@@ -4,23 +4,21 @@
 
 import streamlit as st
 from PIL import Image
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 import bedrock
 
 # Files
-logo = Image.open("images/logo.png")
+logo = Image.open("static/images/logo.png")
 
 st.logo(logo)
-st.title("RMIT Course Advisor Bot", anchor=False, help="""
-# A Data Communications and Net-Centric Computing Project
-""")
-
-## Initialise one chain
-if "qa_chain" not in st.session_state:
-    try:
-        st.session_state.qa_chain = bedrock.get_chain()
-    except Exception as e:
-        st.error(f"\u274C Error: {str(e)}")
+st.title("RMIT Course Advisor Bot",
+         anchor=False,
+         help="# A Data Communications and Net-Centric Computing Project"
+         )
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -39,39 +37,21 @@ except Exception as e:
 
 # React to user input
 if user_question := st.chat_input(
-        "Ask me about School of Computing Technologies programs and courses!"):  # Returns user input
+        "Ask me about School of Computing Technologies programs and courses!"
+):  # Returns user input
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(user_question)
 
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": user_question})
+    messages = [] + st.session_state.messages
 
-    if "qa_chain" in st.session_state and st.session_state.qa_chain is not None:
-        try:
-            # Call the RAG chain
-            # History is tracked by ConversationalRetrievalChain
-            result = st.session_state.qa_chain.invoke({"question": user_question})
-            answer = result["answer"]
-            sources = result.get("source_documents", [])
+    with st.chat_message("assistant"):
+        response = bedrock.invoke_bedrock(messages)
+    st.markdown(response)
 
-            # Append message history to system prompt
-            # messages = [{"role": "system", "content": SYSTEM_PROMPT},] + st.session_state.messages
-            # messages = [] + st.session_state.messages
-
-            # Call Bedrock with message history
-            with st.chat_message("assistant"):
-                st.markdown(answer)
-
-            # Add assistant response to chat history
-            st.session_state.messages.append(
-                {"role": "assistant", "content": answer}
-            )
-
-        except Exception as e:
-            # If .invoke(...) itself fails, show an error message
-            st.error(f"\u274C Error while calling QA chain: {e}")
-
-    else:
-        # If qa_chain never initialized, advise the user
-        st.error("⚠️ Sorry, the QA chain isn’t available. Please check the logs above.")
+    # Add assistant response to chat history
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response}
+    )

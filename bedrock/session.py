@@ -30,6 +30,15 @@ BEDROCK_TEMPERATURE = os.getenv( "BEDROCK_TEMPERATURE" )
 BEDROCK_TOP_P = os.getenv( "BEDROCK_TOP_P" )
 BEDROCK_MAX_TOKENS = os.getenv( "BEDROCK_MAX_TOKENS" )
 
+# Database
+MYSQL_HOST = os.getenv( "MYSQL_HOST" )
+MYSQL_PORT = os.getenv( "MYSQL_PORT" )
+MYSQL_DATABASE = os.getenv( "MYSQL_DATABASE" )
+MYSQL_USERNAME = os.getenv( "MYSQL_USERNAME" )
+MYSQL_PASSWORD = os.getenv( "MYSQL_PASSWORD" )
+MYSQL_URI = (
+    f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}")
+
 LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
 
 # System Prompt
@@ -45,8 +54,53 @@ except Exception as e:
     logger.critical( e )
 
 
-# Get AWS credentials using Cognito
-# Cache in Streamlit
+# Cache Database Connection
+# https://python.langchain.com/api_reference/community/utilities/langchain_community.utilities.sql_database.SQLDatabase.html
+@st.cache_resource( show_spinner = False )
+def get_db( ) -> SQLDatabase:
+    db = SQLDatabase.from_uri( MYSQL_URI )
+    if LOG_TO_CONSOLE:
+        print(
+            f"Database loaded: {MYSQL_DATABASE}, tables: {db.get_usable_table_names( )}",
+        )
+    return db
+
+
+# Build SQL Database Toolkit
+# https://python.langchain.com/api_reference/community/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html
+@st.cache_resource( show_spinner = False )
+def get_sql_toolkit( _llm ) -> SQLDatabaseToolkit:
+    db = get_db( )
+    toolkit = SQLDatabaseToolkit(
+        db = db,
+        llm = _llm,
+        verbose = LOG_TO_CONSOLE,
+    )
+    if LOG_TO_CONSOLE:
+        print( "SQL database toolkit loaded." )
+    return toolkit
+
+
+# Initialize Agent
+# https://python.langchain.com/api_reference/langchain/agents.html#module-langchain.agents
+@st.cache_resource( show_spinner = False )
+def get_sql_agent( _llm ) -> object:
+    toolkit = get_sql_toolkit( _llm )
+    agent = initialize_agent(
+        tools = toolkit.get_tools( ),
+        llm = _llm,
+        # A zero shot agent that does a reasoning step before acting.
+        agent_type = AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        verbose = LOG_TO_CONSOLE,
+        handle_parsing_errors = True,
+    )
+    if LOG_TO_CONSOLE:
+        print( "SQL agent initialized." )
+    return agent
+
+
+# Cache AWS credentials using Cognito in Streamlit
+# Original authors: Cyrus Gao, extended by Xiang Li
 @st.cache_resource( ttl = 55 * 60 )
 def get_aws_keys( ) -> dict:
     idp_client = boto3.client( "cognito-idp", region_name = AWS_REGION )
@@ -83,6 +137,7 @@ def get_aws_keys( ) -> dict:
 
 
 # Cache the Bedrock client
+# https://python.langchain.com/api_reference/aws/chat_models/langchain_aws.chat_models.bedrock.ChatBedrock.html
 @st.cache_resource( ttl = 55 * 60 )
 def client( ) -> ChatBedrock:
     credentials = get_aws_keys( )
@@ -110,6 +165,7 @@ Max Tokens: {BEDROCK_MAX_TOKENS}.
     return client
 
 
+# https://python.langchain.com/docs/concepts/messages/
 @st.cache_resource( show_spinner = False )
 def invoke( messages ):
     llm = client( )
@@ -130,7 +186,9 @@ def invoke( messages ):
             if LOG_TO_CONSOLE:
                 print( f"Assistant message: {content}" )
 
-    response_message = llm.invoke( langchain_messages )
+    agent = get_sql_agent( llm )
+
+    response = agent.run( input = langchain_messages )
     if LOG_TO_CONSOLE:
-        print( f"Response message: {response_message.content}" )
-    return response_message.content
+        print( f"Response message: {response}" )
+    return response

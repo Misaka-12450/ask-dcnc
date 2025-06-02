@@ -1,7 +1,7 @@
-# COSC1111 DCNC Program and Course Advisor Chatbot
+# DCNC Program and Course Advisor
 
-An Anthropic Claude chatbot that can answer questions about RMIT programs and courses using official program plans and
-course guides.
+An Anthropic Claude chatbot that can answer questions about RMIT programs and
+courses using official program plans and course guides.
 
 ## Features
 
@@ -27,7 +27,8 @@ course guides.
 
 You can run this chatbot locally with a Python virtual environment or Docker.
 
-No matter which method you choose, you will need to first clone the repository and fill in the ".env" file.
+No matter which method you choose, you will need to first clone the repository
+and fill in the ".env" file.
 
 #### Clone the Repository
 
@@ -82,20 +83,24 @@ http://YOUR_IP_ADDRESS:8501
 
 #### Docker Compose with Cloudflare Tunnel
 
-You can safely expose your app to the internet using a domain name without messing with port forwarding by using
+You can safely expose your app to the internet using a domain name without
+messing with port forwarding by using
 Cloudflare Tunnel.
 
 Read
 the [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
 on how to set up your tunnel and get the token:
 
-> **Security Advice:** This application has not been thoroughly tested and is unsuitable for public access.
+> **Security Advice:** This application has not been thoroughly tested and is
+> unsuitable for public access.
 > In order to restrict access to your app, you should also hide your hostname
-> behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
+>
+behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
 
 ##### Docker Compose
 
-Create a "docker-compose.yml" file in the same directory as the ".env" file with the following content:
+Create a "docker-compose.yml" file in the same directory as the ".env" file with
+the following content:
 
 ```
 version: '3'

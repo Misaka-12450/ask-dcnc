@@ -1,11 +1,9 @@
 from .session import (
-    client,
-    get_aws_keys,
     invoke,
+    get_aws_keys,
 )
 
 __all__ = [
-    "client",
     "invoke",
     "get_aws_keys",
 ]

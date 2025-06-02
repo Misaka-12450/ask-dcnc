@@ -1,14 +1,10 @@
-# Cyber Security Course Advisor via AWS Bedrock
-# Author: Cyrus Gao, extended by Xiang Li
-# Updated: May 2025
-
 import logging
 import os
 
 import streamlit as st
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv( )
 import bedrock
 
 # Logging
@@ -22,23 +18,19 @@ LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
 #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 #     os.rename(LOG_PATH, f"{LOG_PATH}.{timestamp}")
 logging.basicConfig(
-        level = logging.INFO,
-        format = "%(asctime)s %(levelname)s %(name)s %(message)s"
-        )
+    level = logging.INFO,
+    format = "%(asctime)s %(levelname)s %(name)s %(message)s",
+)
 logger = logging.getLogger( __name__ )
 
-# st.set_page_config(
-#         page_title = "DCNC Advisor",
-#         page_icon = "static/images/favicon.png",
-#         )
-
-st.logo( "static/images/logo.png" )
+USER_AVATAR = "🧑‍🎓"
+ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
 st.title(
-        "DCNC Program and Course Advisor",
-        anchor = False,
-        # help = "# A Data Communications and Net-Centric Computing Project"
-        )
+    "DCNC Program and Course Advisor",
+    anchor = False,
+    # help = "# A Data Communications and Net-Centric Computing Project"
+)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -51,7 +43,13 @@ if "messages" not in st.session_state:
 # Display chat messages from history on app rerun
 try:
     for message in st.session_state.messages:
-        with st.chat_message( message[ "role" ] ):
+        with st.chat_message(
+                name = message[ "role" ],
+                avatar = (
+                        ASSISTANT_AVATAR if message[ "role" ] == "assistant"
+                        else USER_AVATAR
+                ),
+        ):
             st.markdown( message[ "content" ] )
 except Exception as e:
     logger.error( e )
@@ -59,26 +57,30 @@ except Exception as e:
 
 # React to user input
 if user_question := st.chat_input(
-        "Ask me about School of Computing Technologies programs and courses!"
-        ):
-    try:
-        # Returns user input
-        # Display user message in chat message container
-        with st.chat_message( "user" ):
-            st.markdown( user_question )
+        "Ask me about School of Computing Technologies programs and courses!",
+):
+    # Returns user input
+    # Display user message in chat message container
+    with st.chat_message( name = "user", avatar = USER_AVATAR, ):
+        st.markdown( user_question )
 
-        # Add user message to chat history
-        st.session_state.messages.append( { "role": "user", "content": user_question } )
-        messages = [ ] + st.session_state.messages
+    # Add user message to chat history
+    st.session_state.messages.append(
+        { "role": "user", "content": user_question },
+    )
+    messages = st.session_state.messages.copy( )
 
-        with st.chat_message( "assistant" ):
+    with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
+        try:
             response = bedrock.invoke( messages )
-            # response = bedrock.ask_sql_agent(user_question)
-        st.markdown( response )
+            st.markdown( response )
+        except Exception as e:
+            logger.error( e )
+            st.error( f"\u274C Error: {str( e )}" )
+            response = ""
 
-        # Add assistant response to chat history
-        st.session_state.messages.append( { "role": "assistant", "content": response } )
-
-    except Exception as e:
-        logger.error( e )
-        st.error( f"\u274C Error: {str( e )}" )
+    # Add assistant response to chat history
+    if response:
+        st.session_state.messages.append(
+            { "role": "assistant", "content": response },
+        )

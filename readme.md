@@ -28,7 +28,7 @@ courses using official program plans and course guides.
 You can run this chatbot locally with a Python virtual environment or Docker.
 
 No matter which method you choose, you will need to first clone the repository
-and fill in the ".env" file.
+and fill in the `.env` file.
 
 #### Clone the Repository
 
@@ -38,7 +38,7 @@ git clone https://www.github.com/misaka-12450/cosc1111-2502-a3
 
 #### Add your Cognito Credentials
 
-Open the ".env" file in the folder and fill in the blanks.
+Rename the `.env.sample` file to `.env` and fill in the blanks.
 
 ### 🐍 Run with Python
 
@@ -65,7 +65,7 @@ python streamlit run Chat.py
 ```bash
 docker run misaka12450/streamlit \
   -p 8501:8501 \
-  -v REPO_DIRECTORY:/app \
+  -v REPO_PATH:/app \
   -e AWS_REGION='YOUR_AWS_REGION' \
   -e AWS_MODEL_ID='YOUR_AWS_MODEL_ID' \
   -e AWS_IDENTITY_POOL_ID='YOUR_AWS_IDENTITY_POOL_ID' \
@@ -99,7 +99,7 @@ behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com
 
 ##### Docker Compose
 
-Create a "docker-compose.yml" file in the same directory as the ".env" file with
+Create a "docker-compose.yml" file in the same directory as the `.env` file with
 the following content:
 
 ```
@@ -117,7 +117,7 @@ services:
       COGNITO_USERNAME: ${COGNITO_USERNAME}
       COGNITO_PASSWORD: ${COGNITO_PASSWORD}
     # volumes:
-    #   - /home/haley/projects/cosc1111/cosc1111_2502_a3:/app
+    #   - REPO_PATH:/app
     restart: always
 
 

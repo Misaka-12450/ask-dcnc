@@ -1,164 +1,133 @@
-# Assignment 3 Chatbot Deployment Guide (Python Version)
+# COSC1111 DCNC Program and Course Advisor Chatbot
 
-**Purpose:** Help students and tutors deploy and run the Assignment 3 chatbot on Windows 10/11 or macOS using VS Code.
+An Anthropic Claude chatbot that can answer questions about RMIT programs and courses using official program plans and
+course guides.
 
----
+## Features
 
-## 🗂️ Preparation
+- AWS Bedrock backend using Cognito for authentication
+- MariaDB database
+- Langchain chat history and SQL integration
 
-### 📁 Step 0: Download Starter Files
+### Programs
 
-* Download the ZIP package from Canvas: `Assignment3_Chatbot_Python.zip`
-* Unzip the folder to a known location (e.g., Desktop)
-* The folder structure looks like this:
+- 452 individual program plans
+- Core courses list
+- Major/minor list
 
-```
-Assignment3_Chatbot_Python/
-├── app.py
-├── requirements.txt
-├── chatbot_logic.py
-├── Fw_ BP355 enrolment project/   <- raw PDFs
-├── courses_data.json
-├── cyber_security_program_structure.json
-```
+### Courses
 
----
+- 8334 course guides
+- Course codes (if any)
+- Course coordinator details
+- Course prerequisites
+- Course description
 
-## 🧰 Step 1: Check Python Version
+## Run It Yourself
 
-### ✅ Requirement: Python 3.11
+You can run this chatbot locally with a Python virtual environment or Docker.
 
-Open Terminal (macOS) or Command Prompt / PowerShell (Windows), and run:
+No matter which method you choose, you will need to first clone the repository and fill in the ".env" file.
 
-```bash
-python --version
-```
-
-If the version is **not 3.11.x**, download and install it from: [https://www.python.org/downloads/release/python-3110/](https://www.python.org/downloads/release/python-3110/)
-
----
-
-## 🐍 Step 2: Set Up Virtual Environment (Recommended)
-
-In your terminal, navigate into the unzipped folder:
+#### Clone the Repository
 
 ```bash
-cd path/to/Assignment3_Chatbot_Python
+git clone https://www.github.com/misaka-12450/cosc1111-2502-a3
 ```
 
-Create and activate a virtual environment:
+#### Add your Cognito Credentials
 
-### Windows:
+Open the ".env" file in the folder and fill in the blanks.
+
+### 🐍 Run with Python
+
+#### Setup Virtual Environment and Install Dependencies
 
 ```bash
 python -m venv .venv
 .\.venv\Scripts\activate
-```
-
-### macOS:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
----
-
-## 📦 Step 3: Install Dependencies
-
-Don't forget to paste your username and password inside to the app.py
-
-```
-APP_CLIENT_ID = "3h7m15971bnfah362dldub1u2p"
-USERNAME = "" # Replace with your username
-PASSWORD = ""    # Replace with your password
-```
-
-Once your virtual environment is activated, install all dependencies:
-
-```bash
 pip install -r requirements.txt
 ```
 
-If installation is successful, you’ll return to the prompt without errors.
-
-Sometimes, You might see the warning like 'Import "streamlit" could not be resolvedPylancereportMissingImports' in your VS Code editor. Don't worry — this warning is from the VS Code language server (Pylance) and does not affect code execution as long as streamlit is installed correctly.
-
-This usually happens when:
-
-VS Code is not using the correct Python interpreter (e.g. your virtual environment), or
-
-The language server hasn't picked up the environment changes yet.
-
-✅ If you have already installed the requirements and can run the app using:
-
-streamlit run app.py
-then everything is working as expected, and you can safely ignore this warning.
-
-
----
-
-## 🚀 Step 4: Run the Chatbot
-
-To launch the chatbot UI:
+#### Run!
 
 ```bash
-streamlit run app.py
+python streamlit run Chat.py
 ```
 
-This will open a browser window with your chatbot interface.
+### 🚢 Run on Docker
+
+[Install Docker](https://www.docker.com/get-started/)
+
+#### Docker Run
+
+```bash
+docker run misaka12450/streamlit \
+  -p 8501:8501 \
+  -v REPO_DIRECTORY:/app \
+  -e AWS_REGION='YOUR_AWS_REGION' \
+  -e AWS_MODEL_ID='YOUR_AWS_MODEL_ID' \
+  -e AWS_IDENTITY_POOL_ID='YOUR_AWS_IDENTITY_POOL_ID' \
+  -e AWS_USER_POOL_ID='YOUR_AWS_USER_POOL_ID' \
+  -e AWS_APP_CLIENT_ID='YOUR_AWS_APP_CLIENT_ID' \
+  -e COGNITO_USERNAME='YOUR_COGNITO_USERNAME' \
+  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME'
+```
+
+You can access the app at:
+
+```
+http://YOUR_IP_ADDRESS:8501
+```
+
+#### Docker Compose with Cloudflare Tunnel
+
+You can safely expose your app to the internet using a domain name without messing with port forwarding by using
+Cloudflare Tunnel.
+
+Read
+the [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
+on how to set up your tunnel and get the token:
+
+> **Security Advice:** This application has not been thoroughly tested and is unsuitable for public access.
+> In order to restrict access to your app, you should also hide your hostname
+> behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
+
+##### Docker Compose
+
+Create a "docker-compose.yml" file in the same directory as the ".env" file with the following content:
+
+```
+version: '3'
+services:
+  app:
+    image: misaka12450/streamlit:latest
+
+    environment:
+      AWS_REGION: ${AWS_REGION}
+      AWS_MODEL_ID: ${AWS_MODEL_ID}
+      AWS_IDENTITY_POOL_ID: ${AWS_IDENTITY_POOL_ID}
+      AWS_USER_POOL_ID: ${AWS_USER_POOL_ID}
+      AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}
+      COGNITO_USERNAME: ${COGNITO_USERNAME}
+      COGNITO_PASSWORD: ${COGNITO_PASSWORD}
+    # volumes:
+    #   - /home/haley/projects/cosc1111/cosc1111_2502_a3:/app
+    restart: always
 
 
----
+  cloudflared:
+    image: cloudflare/cloudflared
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    environment:
+      CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+    restart: always
+```
 
-## 📂 Step 5: Upload Course Data
+Run Docker Compose:
 
-In the chatbot UI:
-
-1. Choose upload mode: `Structured JSON` or `PDF`
-2. Upload the following (if using JSON mode):
-
-   * `courses_data.json`
-   * `cyber_security_program_structure.json`
-
-### Optional: Convert PDF to JSON
-
-Please refer to [Converting PDF to JSON notebook on Kaggle](https://www.kaggle.com/code/aisuko/converting-pdf-to-json)
+```bash
+docker compose up -d
+```
 
 
-You can also upload the original PDFs from the `data/Fw_ BP355 enrolment project` folder for testing unstructured sources.
-
----
-
-## 💬 Step 6: Start Chatting
-
-Type a question such as:
-
-* *"What’s the difference between COSC2626 and INTE2402?"*
-* *"How do I enrol in COSC1111?"*
-
-The chatbot will respond based on the uploaded data.
-
-
----
-
-## ❓ Troubleshooting
-
-| Issue                          | Solution                                                      |
-| ------------------------------ | ------------------------------------------------------------- |
-| `streamlit: command not found` | Make sure virtual environment is activated                    |
-| Cannot install packages        | Ensure you have Python 3.11 and pip is working                |
-| No browser opens               | Visit [http://localhost:8501](http://localhost:8501) manually |
-| Data not loaded properly       | Check file formats and filenames                              |
-
----
-
-## ✅ Done!
-
-You now have a fully working Assignment 3 chatbot. You can begin answering assignment questions and improving your knowledge base.
-
-For more advanced tasks (prompt tuning, data cleaning, documentation), please refer to the **Course Enrolment Chatbot Handbook**.
-
----
-
-© RMIT COSC1111 - May 2025

@@ -1,3 +1,11 @@
-from .module import invoke_bedrock
+from .session import (
+    client,
+    get_aws_keys,
+    invoke,
+)
 
-__all__ = ["invoke_bedrock"]
+__all__ = [
+    "client",
+    "invoke",
+    "get_aws_keys",
+]

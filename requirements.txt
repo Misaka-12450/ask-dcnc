@@ -1,9 +1,6 @@
-streamlit>=1.45.1
-boto3>=1.38.26
-faiss-cpu>=1.11.0
+streamlit~=1.45.1
+boto3~=1.38.26
 
-python-dotenv>=1.1.0
-langchain>=0.3.21
-langchain_community>=0.3.24
-langchain_aws>=0.2.24
-langchain_huggingface>=0.2.0
+python-dotenv~=1.1.0
+langchain~=0.3.21
+langchain_aws~=0.2.24

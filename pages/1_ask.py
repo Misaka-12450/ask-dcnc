@@ -2,9 +2,13 @@ import logging
 import os
 
 import streamlit as st
-from dotenv import load_dotenv
+import pathlib
 
-load_dotenv( )
+# Check if running in Docker
+if not pathlib.Path( "/.dockerenv" ).exists( ):
+    from dotenv import load_dotenv
+
+    load_dotenv( )
 import bedrock
 
 # Logging

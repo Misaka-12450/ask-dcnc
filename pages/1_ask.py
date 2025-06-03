@@ -12,7 +12,7 @@ if not pathlib.Path( "/.dockerenv" ).exists( ):
 import bedrock
 
 # Logging
-BASE_DIR = os.path.dirname( __file__ )
+BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
 LOGGING_LEVEL = os.getenv( "LOGGING_LEVEL", "INFO" )
 LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
 # LOG_PATH = os.path.normpath(
@@ -26,6 +26,22 @@ logging.basicConfig(
     format = "%(asctime)s %(levelname)s %(name)s %(message)s",
 )
 logger = logging.getLogger( __name__ )
+
+# System Prompt
+try:
+    SYSTEM_PROMPT_PATH = os.path.normpath(
+        os.path.join( BASE_DIR, "prompts/system.md" ),
+    )
+    with open( SYSTEM_PROMPT_PATH, encoding = "utf-8" ) as f:
+        original_system_prompt = f.read( )
+        system_prompt = original_system_prompt.replace(
+            "{answer_style}",
+            st.session_state.answer_style,
+        )
+    if LOG_TO_CONSOLE:
+        print( "System prompt loaded." )
+except Exception as e:
+    logger.critical( e )
 
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
@@ -61,7 +77,7 @@ except Exception as e:
 
 # React to user input
 if user_question := st.chat_input(
-        "Ask me about School of Computing Technologies programs and courses!",
+        "Ask me about any RMIT program or course!",
 ):
     # Returns user input
     # Display user message in chat message container
@@ -74,9 +90,18 @@ if user_question := st.chat_input(
     )
     messages = st.session_state.messages.copy( )
 
+    # Update the system prompt
+    if st.session_state.answer_style != st.session_state.last_answer_style:
+        system_prompt = original_system_prompt.replace(
+            "{answer_style}",
+            st.session_state.answer_style,
+        )
+        st.session_state.last_answer_style = st.session_state.answer_style
+
+    # Invoke the LLM with the chat history
     with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
         try:
-            response = bedrock.invoke( messages )
+            response = bedrock.invoke( messages, system_prompt )
             st.markdown( response )
         except Exception as e:
             logger.error( e )

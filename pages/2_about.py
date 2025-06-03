@@ -14,8 +14,8 @@ components.html(
     <!-- Place this tag where you want the button to render. -->
     <a class="github-button"
        href="https://github.com/Misaka-12450/cosc1111_2502_a3"
-       data-color-scheme="no-preference: light; light: light; dark: dark;"
-       data-size="large"
+       prompts-color-scheme="no-preference: light; light: light; dark: dark;"
+       prompts-size="large"
        aria-label="GitHub">
         GitHub Repository
     </a>

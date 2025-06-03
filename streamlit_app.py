@@ -28,6 +28,24 @@ st.set_page_config(
 st.logo( "static/images/rmit_university_logo_144p.png" )
 
 with st.sidebar:
+    # Streamlit Pills for Answer Style Selection
+    # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
+    if pg.title == "Ask Advisor":
+        if "answer_style" not in st.session_state:
+            st.session_state.answer_style = "Brief"
+        if "last_answer_style" not in st.session_state:
+            st.session_state.last_answer_style = st.session_state.answer_style
+        answer_style_options = {
+            "Brief": ":material/summarize: Brief",
+            "Comprehensive": ":material/receipt_long: Comprehensive",
+        }
+        st.session_state.answer_style = st.pills(
+            label = "Answer Style",
+            options = answer_style_options.keys( ),
+            format_func = lambda option: answer_style_options[ option ],
+            default = "Brief",
+        )
+
     st.info(
         """
         DCNC Program and Course Advisor is a COSC1111 Data Communications and Net-Centric Computing Assignment.

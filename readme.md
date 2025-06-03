@@ -72,7 +72,12 @@ docker run misaka12450/streamlit \
   -e AWS_USER_POOL_ID='YOUR_AWS_USER_POOL_ID' \
   -e AWS_APP_CLIENT_ID='YOUR_AWS_APP_CLIENT_ID' \
   -e COGNITO_USERNAME='YOUR_COGNITO_USERNAME' \
-  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME'
+  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' \
+  -e MYSQL_HOST='YOUR_MYSQL_HOST' \
+  -e MYSQL_PORT='YOUR_MYSQL_PORT' \
+  -e MYSQL_DATABASE='YOUR_MYSQL_DATABASE' \
+  -e MYSQL_USERNAME='YOUR_MYSQL_USERNAME' \
+  -e MYSQL_PASSWORD='YOUR_MYSQL_PASSWORD'
 ```
 
 You can access the app at:
@@ -99,7 +104,7 @@ behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com
 
 ##### Docker Compose
 
-Create a "docker-compose.yml" file in the same directory as the `.env` file with
+Create a `docker-compose.yml` file in the same directory as the `.env` file with
 the following content:
 
 ```
@@ -116,6 +121,11 @@ services:
       AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}
       COGNITO_USERNAME: ${COGNITO_USERNAME}
       COGNITO_PASSWORD: ${COGNITO_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     # volumes:
     #   - REPO_PATH:/app
     restart: always

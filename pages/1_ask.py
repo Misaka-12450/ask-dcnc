@@ -47,10 +47,16 @@ USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
 st.title(
-    "DCNC Program and Course Advisor",
+    "AskDCNC",
     anchor = False,
     # help = "# A Data Communications and Net-Centric Computing Project"
 )
+
+with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR ):
+    st.markdown(
+        "Hello! I am the DCNC Program and Course Advisor. "
+        "You can ask me about any RMIT program or course.",
+    )
 
 # Initialize chat history
 if "messages" not in st.session_state:

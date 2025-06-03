@@ -22,4 +22,12 @@ components.html(
     """,
 )
 
+st.markdown(
+    """
+    > **Note**
+    >
+    > The GitHub repository is currently private.
+    """,
+)
+
 st.markdown( readme )

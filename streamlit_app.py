@@ -17,17 +17,20 @@ pg = st.navigation(
     ],
 )
 
+SITE_TITLE = "AskDCNC"
+
 # https://github.com/streamlit/streamlit/issues/8960
 st.set_page_config(
     page_title = (
-        "About | DCNC Advisor" if pg.title == "About"
-        else "DCNC Advisor"
+        "About | " + SITE_TITLE if pg.title == "About"
+        else SITE_TITLE
     ),
     page_icon = "static/images/favicon.png",
 )
 st.logo( "static/images/rmit_university_logo_144p.png" )
 
 with st.sidebar:
+    # Ask Advisor Page
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
     if pg.title == "Ask Advisor":
@@ -46,13 +49,15 @@ with st.sidebar:
             default = "Brief",
         )
 
-    st.info(
-        """
-        DCNC Program and Course Advisor is a COSC1111 Data Communications and Net-Centric Computing Assignment.
-        
-        Developed by Haley Wong
-
-        Powered by Beer 🍺 and the Magic of AI ✨""",
-    )
+    # About Page
+    if pg.title == "About":
+        st.info(
+            """
+            AskDCNC is a COSC1111 Data Communications and Net-Centric Computing Assignment.
+            
+            Developed by Haley Wong
+    
+            Powered by Beer 🍺 and the Magic of AI ✨""",
+        )
 
 pg.run( )

@@ -5,9 +5,12 @@ courses using official program plans and course guides.
 
 ## Features
 
+- Web chat interface using Streamlit chat
 - AWS Bedrock backend using Cognito for authentication
 - MariaDB database
-- Langchain chat history and SQL integration
+- Contextual memory provided by LangChain [Messages](https://python.langchain.com/docs/concepts/messages/)
+- Langchain [SQLDatabaseToolkit](https://python.langchain.com/api_reference/community/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html) and [zero-shot Agent](https://python.langchain.com/api_reference/langchain/agents/langchain.agents.agent.Agent.html)
+- Dynamic system prompt features
 
 ### Programs
 
@@ -25,22 +28,21 @@ courses using official program plans and course guides.
 
 ## Run It Yourself
 
-You can run this chatbot locally with a Python virtual environment or Docker.
+You can run this chatbot locally with a [Python virtual environment](#run-with-python) or [Docker](#run-on-docker).
 
-No matter which method you choose, you will need to first clone the repository
-and fill in the `.env` file.
+### 🐍 Run with Python
 
 #### Clone the Repository
 
+Open a terminal and go to the folder you want to clone the repository into, then run:
+
 ```bash
-git clone https://www.github.com/misaka-12450/cosc1111-2502-a3
+git clone https://www.github.com/misaka-12450/ask-dcnc.git
 ```
 
 #### Add your Cognito Credentials
 
-Rename the `.env.sample` file to `.env` and fill in the blanks.
-
-### 🐍 Run with Python
+Rename the `.env.sample` file in the repository to `.env` and fill in the blanks.
 
 #### Setup Virtual Environment and Install Dependencies
 
@@ -62,8 +64,10 @@ python streamlit run Chat.py
 
 #### Docker Run
 
+Replace REPO_PATH with the path to the path you want to mount the repository to, and replace the environment variables with your own values.
+
 ```bash
-docker run misaka12450/streamlit \
+docker run ghcr.io/misaka-12450/ask-dcnc:latest \
   -p 8501:8501 \
   -v REPO_PATH:/app \
   -e AWS_REGION='YOUR_AWS_REGION' \
@@ -99,47 +103,9 @@ on how to set up your tunnel and get the token:
 > **Security Advice:** This application has not been thoroughly tested and is
 > unsuitable for public access.
 > In order to restrict access to your app, you should also hide your hostname
->
-behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
+> behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
 
-##### Docker Compose
-
-Create a `docker-compose.yml` file in the same directory as the `.env` file with
-the following content:
-
-```
-version: '3'
-services:
-  app:
-    image: misaka12450/streamlit:latest
-
-    environment:
-      AWS_REGION: ${AWS_REGION}
-      AWS_MODEL_ID: ${AWS_MODEL_ID}
-      AWS_IDENTITY_POOL_ID: ${AWS_IDENTITY_POOL_ID}
-      AWS_USER_POOL_ID: ${AWS_USER_POOL_ID}
-      AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}
-      COGNITO_USERNAME: ${COGNITO_USERNAME}
-      COGNITO_PASSWORD: ${COGNITO_PASSWORD}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USERNAME: ${MYSQL_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    # volumes:
-    #   - REPO_PATH:/app
-    restart: always
-
-
-  cloudflared:
-    image: cloudflare/cloudflared
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
-    environment:
-      CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
-    restart: always
-```
-
-Run Docker Compose:
+[Clone the repository](#clone-the-repository) and fill in the `.env` file with your values. Then run Docker Compose:
 
 ```bash
 docker compose up -d

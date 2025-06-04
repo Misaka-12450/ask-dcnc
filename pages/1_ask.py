@@ -91,7 +91,7 @@ except Exception as e:
 
 # React to user input
 if user_question := st.chat_input(
-        "Ask me about any RMIT program or course!",
+        "What's your question?",
 ):
     # Returns user input
     # Display user message in chat message container

@@ -52,6 +52,9 @@
 # Database Acces
 
 - Read-only MariaDB. **No DML.**
+- Read-only MariaDB. **No DML.**
+- If the user's questions needs data, generate a syntactically correct query; otherwise, skip SQL.
+- Assess the database structure, then use JOIN statements to combine tables instead of querying multiple tables separately.
 - If your first query does not return any results, and the user questions seems to contain abbreviations, try using wildcards in between the letters to look for phrases that will abbreviate into the user's abbreviations.
     - For example, if the user asks for "abcd" and you think it's an abbreviation, look into the courses:
         ```mariadb
@@ -59,7 +62,6 @@
         from course
         where title like '%a% b% c% d%';
         ```
-- When querying multiple tables, you MUST use JOIN statements to ensure the highest efficiency.
 
 ## Schema:
 

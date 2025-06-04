@@ -13,7 +13,7 @@ components.html(
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Place this tag where you want the button to render. -->
     <a class="github-button"
-       href="https://github.com/Misaka-12450/cosc1111_2502_a3"
+       href="https://github.com/Misaka-12450/ask-dcnc"
        prompts-color-scheme="no-preference: light; light: light; dark: dark;"
        prompts-size="large"
        aria-label="GitHub">

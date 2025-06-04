@@ -7,6 +7,16 @@ BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
 with open( os.path.join( BASE_DIR, "readme.md" ), encoding = "utf-8" ) as f:
     readme = f.read( )
 
+with st.sidebar:
+    st.info(
+        """
+        AskDCNC is a COSC1111 Data Communications and Net-Centric Computing Assignment.
+
+        Developed by Haley Wong
+
+        Powered by Beer 🍺 and the Magic of AI ✨""",
+    )
+
 components.html(
     """
     <!-- Place this tag in your head or just before your close body tag. -->

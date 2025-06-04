@@ -60,6 +60,37 @@ st.title(
     # help = "# A Data Communications and Net-Centric Computing Project"
 )
 
+with st.sidebar:
+    # Streamlit Pills for Answer Style Selection
+    # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
+    answer_style_options = {
+        "Brief": ":material/summarize: Brief",
+        "Comprehensive": ":material/receipt_long: Comprehensive",
+    }
+    st.session_state.answer_style = st.pills(
+        label = "Answer Style",
+        options = answer_style_options.keys( ),
+        format_func = lambda option: answer_style_options[ option ],
+        default = "Brief",
+    )
+
+    # TODO: LLM model selection
+
+    # TODO: LLM temperature selection
+    llm_temperature_options = {
+        0.0: ":material/my_location: Precise",
+        0.5: ":material/balance: Balanced",
+        1.0: ":material/palette: Creative",
+    }
+    st.session_state.llm_temperature = st.pills(
+        label = "Temperature",
+        options = llm_temperature_options.keys( ),
+        format_func = lambda option: llm_temperature_options[ option ],
+        default = 0.5,
+        help = "Precise = 0.0, Balanced = 0.5, Creative = 1.0",
+    )
+
+# Initial message - not a part of the chat history
 with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR ):
     st.markdown(
         "Hello! I am the DCNC Program and Course Advisor. "

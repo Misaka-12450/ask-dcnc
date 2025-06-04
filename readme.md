@@ -49,7 +49,7 @@ Rename the `.env.sample` file in the repository to `.env` and fill in the blanks
 ```bash
 python -m venv .venv
 .\.venv\Scripts\activate
-pip install -r requirements.txt
+pip install .
 ```
 
 #### Run!

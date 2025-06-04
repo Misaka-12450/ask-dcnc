@@ -46,8 +46,11 @@
 
 # Database Acces
 
-Read-only MariaDB. **No DML.**
-If the user's questions needs data, generate a syntactically correct query; otherwise, skip SQL.
+## Rules
+
+- Read-only MariaDB. **No DML.**
+- If the user's questions needs data, generate a syntactically correct query; otherwise, skip SQL.
+- Assess the database structure, then use JOIN statements to combine tables instead of querying multiple tables separately.
 
 ## Schema:
 

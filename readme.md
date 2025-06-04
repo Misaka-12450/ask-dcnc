@@ -111,4 +111,23 @@ on how to set up your tunnel and get the token:
 docker compose up -d
 ```
 
+## Model Comparison
+
+| Model                         | Release Date  | Context Window    | Speed     |
+|-------------------------------|---------------|-------------------|-----------|
+| Claude 3 Haiku                | March 2024    | 200k tokens       | Fast      |
+| Claude 3.5 Sonnet             | June 2024     | 200k tokens       | Reasoning |
+| Claude 3.7 Sonnet             | February 2025 | 200k tokens       | Hybrid    |
+| Amazon Nova Pro               | December 2024 | 300k tokens       | Reasoning |
+| Llama 4 Maverick 17B Instruct | October 2024  | 128k/1M(?) tokens | Fast      |
+
+Although this project is sponsored by RMIT, you may also be interested in the cost of each model for more understanding:
+
+| Anthropic models     | Price per 1,000 input tokens | Price per 1,000 output tokens | Price per 1,000 input tokens (batch) | Price per 1,000 output tokens (batch) | Price per 1,000 input tokens (cache write) | Price per 1,000 input tokens (cache read) |
+|----------------------|------------------------------|-------------------------------|--------------------------------------|---------------------------------------|--------------------------------------------|-------------------------------------------|
+| Claude 3 Haiku       | $0.00025                     | $0.00125                      | $0.000125                            | $0.000625                             | N/A                                        | N/A                                       | 
+| Claude 3.5 Sonnet    | $0.003                       | $0.015                        | $0.0015                              | $0.0075                               | $0.00375                                   | $0.0003                                   | 
+| Claude 3.7 Sonnet    | $0.003                       | $0.015                        | N/A                                  | N/A                                   | $0.00375                                   | $0.0003                                   |
+| Amazon Nova Pro      | $0.0008                      | $0.0032                       | $0.0004                              | $0.0016                               | N/A                                        | $0.0002                                   |
+| Llama 4 Maverick 17B | $0.00024                     | $0.00097                      | $0.00012                             | $0.000485                             | N/A                                        | N/A                                       |
 

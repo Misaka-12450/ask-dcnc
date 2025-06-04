@@ -4,6 +4,8 @@ import os
 import streamlit as st
 import pathlib
 
+__version__ = st.session_state.version
+
 # Check if running in Docker
 if not pathlib.Path( "/.dockerenv" ).exists( ):
     from dotenv import load_dotenv
@@ -96,6 +98,8 @@ with st.sidebar:
         format_func = lambda option: llm_temperature_options[ option ],
         default = 0.5,
     )
+    st.markdown( "" )
+    st.info( "Version " + __version__ )
 
 # Initial message - not a part of the chat history
 with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR ):

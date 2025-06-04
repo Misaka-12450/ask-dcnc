@@ -4,7 +4,6 @@ services:
 
     environment:
       AWS_REGION: ${AWS_REGION}
-      AWS_MODEL_ID: ${AWS_MODEL_ID}
       AWS_IDENTITY_POOL_ID: ${AWS_IDENTITY_POOL_ID}
       AWS_USER_POOL_ID: ${AWS_USER_POOL_ID}
       AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}

@@ -9,7 +9,7 @@ if not pathlib.Path( "/.dockerenv" ).exists( ):
     from dotenv import load_dotenv
 
     load_dotenv( )
-import bedrock
+import ask_dcnc
 
 BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
 
@@ -61,33 +61,40 @@ st.title(
 )
 
 with st.sidebar:
+    llm_model_options = {
+        "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
+        "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
+        "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
+        "amazon.nova-pro-v1:0": "Amazon Nova Pro",
+        "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
+    }
+    st.session_state.llm_model = st.selectbox(
+        label = "LLM Model",
+        options = llm_model_options.keys( ),
+        format_func = lambda option: llm_model_options[ option ],
+    )
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
     answer_style_options = {
         "Brief": ":material/summarize: Brief",
         "Comprehensive": ":material/receipt_long: Comprehensive",
     }
-    st.session_state.answer_style = st.pills(
+    st.session_state.answer_style = st.segmented_control(
         label = "Answer Style",
         options = answer_style_options.keys( ),
         format_func = lambda option: answer_style_options[ option ],
         default = "Brief",
     )
 
-    # TODO: LLM model selection
-
-    # TODO: LLM temperature selection
     llm_temperature_options = {
         0.0: ":material/my_location: Precise",
         0.5: ":material/balance: Balanced",
-        1.0: ":material/palette: Creative",
     }
-    st.session_state.llm_temperature = st.pills(
+    st.session_state.llm_temperature = st.segmented_control(
         label = "Temperature",
         options = llm_temperature_options.keys( ),
         format_func = lambda option: llm_temperature_options[ option ],
         default = 0.5,
-        help = "Precise = 0.0, Balanced = 0.5, Creative = 1.0",
     )
 
 # Initial message - not a part of the chat history
@@ -146,7 +153,7 @@ if user_question := st.chat_input(
     # Invoke the LLM with the chat history
     with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
         try:
-            response = bedrock.invoke( messages, system_prompt )
+            response = ask_dcnc.invoke( messages, system_prompt )
             st.markdown( response )
         except Exception as e:
             logger.error( e )

@@ -1,8 +1,11 @@
 import streamlit as st
 from dotenv import load_dotenv
+import importlib.metadata
+
+__version__ = importlib.metadata.version( "ask-dcnc" )
 
 load_dotenv( )
-from bedrock import get_aws_keys
+from ask_dcnc import get_aws_keys
 
 pg = st.navigation(
     [

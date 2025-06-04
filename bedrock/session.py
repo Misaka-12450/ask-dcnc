@@ -125,12 +125,10 @@ def get_aws_keys( ) -> dict:
     return creds
 
 
-# Cache the Bedrock client
+# Bedrock Client
 # https://python.langchain.com/api_reference/aws/chat_models/langchain_aws.chat_models.bedrock.ChatBedrock.html
-@st.cache_resource( ttl = 45 * 60 )
-def client( ) -> ChatBedrock:
-    credentials = get_aws_keys( )
-    # Handle ExpiredTokenException error
+@st.cache_resource( ttl = 45 * 60, show_spinner = False )
+def get_client( temperature: float, credentials: dict ) -> ChatBedrock:
     try:
         client = ChatBedrock(
             region_name = AWS_REGION,
@@ -138,7 +136,7 @@ def client( ) -> ChatBedrock:
             aws_secret_access_key = credentials[ "SecretKey" ],
             aws_session_token = credentials[ "SessionToken" ],
             model_id = AWS_MODEL_ID,
-            temperature = float( BEDROCK_TEMPERATURE ),
+            temperature = float( temperature ),
             max_tokens = int( BEDROCK_MAX_TOKENS ),
             model_kwargs = {
                 "top_p": float( BEDROCK_TOP_P ),
@@ -148,36 +146,32 @@ def client( ) -> ChatBedrock:
         if e.response[ "Error" ][ "Code" ] == "ExpiredTokenException":
             get_aws_keys.clear( )
             credentials = get_aws_keys( )
-            client = ChatBedrock(
-                region_name = AWS_REGION,
-                aws_access_key_id = credentials[ "AccessKeyId" ],
-                aws_secret_access_key = credentials[ "SecretKey" ],
-                aws_session_token = credentials[ "SessionToken" ],
-                model_id = AWS_MODEL_ID,
-                temperature = float( BEDROCK_TEMPERATURE ),
-                max_tokens = int( BEDROCK_MAX_TOKENS ),
-                model_kwargs = {
-                    "top_p": float( BEDROCK_TOP_P ),
-                },
-            )
+            client = get_client( temperature, credentials )
         else:
             raise
+    return client
+
+
+@st.cache_resource( ttl = 45 * 60 )
+def client( temperature: float ) -> ChatBedrock:
+    credentials = get_aws_keys( )
+    # Handle ExpiredTokenException error
+    llm = get_client( temperature = temperature, credentials = credentials )
     if LOG_TO_CONSOLE:
         print(
             f"""
 LLM loaded: {AWS_MODEL_ID}, 
-Temperature: {BEDROCK_TEMPERATURE}, 
+Temperature: {temperature},
 Top P: {BEDROCK_TOP_P}, 
 Max Tokens: {BEDROCK_MAX_TOKENS}.
 """,
         )
-    return client
+    return llm
 
 
 # https://python.langchain.com/docs/concepts/messages/
-@st.cache_resource( ttl = 45 * 60, show_spinner = "Thinking..." )
 def invoke( messages, system_prompt: str ) -> str:
-    llm = client( )
+    llm = client( temperature = st.session_state.llm_temperature )
 
     langchain_messages = [ ]
     langchain_messages.append( SystemMessage( content = system_prompt ) )

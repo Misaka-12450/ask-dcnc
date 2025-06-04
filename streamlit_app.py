@@ -1,5 +1,10 @@
 import streamlit as st
 from dotenv import load_dotenv
+import toml
+
+with open( "pyproject.toml", "r", encoding = "utf-8" ) as f:
+    st.session_state.version = toml.load( f )[ "project" ][ "version" ]
+__version__ = st.session_state.version
 
 load_dotenv( )
 from ask_dcnc import get_aws_keys
@@ -30,6 +35,9 @@ st.set_page_config(
         else SITE_TITLE
     ),
     page_icon = "static/images/favicon.png",
+    menu_items = {
+        'about': f"AskDCNC v{__version__}",
+    },
 )
 st.logo( "static/images/rmit_university_logo_144p.png" )
 

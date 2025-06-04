@@ -3,11 +3,8 @@ import os
 
 import streamlit as st
 import pathlib
-import toml
 
-with open( "pyproject.toml", "r", encoding = "utf-8" ) as f:
-    pyproject = toml.load( f )
-__version__ = pyproject[ "project" ][ "version" ]
+__version__ = st.session_state.version
 
 # Check if running in Docker
 if not pathlib.Path( "/.dockerenv" ).exists( ):

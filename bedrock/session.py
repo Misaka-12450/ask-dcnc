@@ -90,7 +90,7 @@ def get_sql_agent( _llm ) -> object:
 
 # Cache AWS credentials using Cognito in Streamlit
 # Original authors: Cyrus Gao, extended by Xiang Li
-@st.cache_resource( ttl = 45 * 60 )
+@st.cache_resource( ttl = 45 * 60, show_spinner = False )
 def get_aws_keys( ) -> dict:
     idp_client = boto3.client( "cognito-idp", region_name = AWS_REGION )
     response = idp_client.initiate_auth(
@@ -175,7 +175,7 @@ Max Tokens: {BEDROCK_MAX_TOKENS}.
 
 
 # https://python.langchain.com/docs/concepts/messages/
-@st.cache_resource( ttl = 45 * 60 )
+@st.cache_resource( ttl = 45 * 60, show_spinner = "Thinking..." )
 def invoke( messages, system_prompt: str ) -> str:
     llm = client( )
 

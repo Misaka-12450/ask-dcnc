@@ -11,8 +11,10 @@ if not pathlib.Path( "/.dockerenv" ).exists( ):
     load_dotenv( )
 import bedrock
 
-# Logging
 BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
+
+# Logging
+# TODO: Log to database
 LOGGING_LEVEL = os.getenv( "LOGGING_LEVEL", "INFO" )
 LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
 # LOG_PATH = os.path.normpath(
@@ -28,11 +30,17 @@ logging.basicConfig(
 logger = logging.getLogger( __name__ )
 
 # System Prompt
+# TODO: Use a function to generate the system prompt
 try:
     SYSTEM_PROMPT_PATH = os.path.normpath(
         os.path.join( BASE_DIR, "prompts/system.md" ),
     )
     with open( SYSTEM_PROMPT_PATH, encoding = "utf-8" ) as f:
+        if "answer_style" not in st.session_state:
+            st.session_state.answer_style = "Brief"
+        if "last_answer_style" not in st.session_state:
+            st.session_state.last_answer_style = st.session_state.answer_style
+
         original_system_prompt = f.read( )
         system_prompt = original_system_prompt.replace(
             "{answer_style}",

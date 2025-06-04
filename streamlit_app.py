@@ -1,4 +1,8 @@
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv( )
+from bedrock import get_aws_keys
 
 pg = st.navigation(
     [
@@ -34,10 +38,7 @@ with st.sidebar:
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
     if pg.title == "Ask Advisor":
-        if "answer_style" not in st.session_state:
-            st.session_state.answer_style = "Brief"
-        if "last_answer_style" not in st.session_state:
-            st.session_state.last_answer_style = st.session_state.answer_style
+        # Answer style selection
         answer_style_options = {
             "Brief": ":material/summarize: Brief",
             "Comprehensive": ":material/receipt_long: Comprehensive",
@@ -48,6 +49,10 @@ with st.sidebar:
             format_func = lambda option: answer_style_options[ option ],
             default = "Brief",
         )
+
+        # TODO: LLM model selection
+
+        # TODO: LLM temperature selection
 
     # About Page
     if pg.title == "About":
@@ -61,3 +66,5 @@ with st.sidebar:
         )
 
 pg.run( )
+
+get_aws_keys( )  # Obtain AWS keys first thing to speed up response time

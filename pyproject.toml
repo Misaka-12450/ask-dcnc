@@ -16,7 +16,8 @@ dependencies = [
     "langchain~=0.3.21",
     "langchain_aws~=0.2.24",
     "langchain-community~=0.3.24",
-    "PyMySQL~=1.1.1"
+    "PyMySQL~=1.1.1",
+    "toml~=0.10.2",
 ]
 
 [tool.setuptools]

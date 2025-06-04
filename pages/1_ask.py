@@ -3,6 +3,11 @@ import os
 
 import streamlit as st
 import pathlib
+import toml
+
+with open( "pyproject.toml", "r", encoding = "utf-8" ) as f:
+    pyproject = toml.load( f )
+__version__ = pyproject[ "project" ][ "version" ]
 
 # Check if running in Docker
 if not pathlib.Path( "/.dockerenv" ).exists( ):
@@ -96,6 +101,8 @@ with st.sidebar:
         format_func = lambda option: llm_temperature_options[ option ],
         default = 0.5,
     )
+    st.markdown( "" )
+    st.info( "Version " + __version__ )
 
 # Initial message - not a part of the chat history
 with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR ):

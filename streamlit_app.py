@@ -1,8 +1,5 @@
 import streamlit as st
 from dotenv import load_dotenv
-import importlib.metadata
-
-__version__ = importlib.metadata.version( "ask-dcnc" )
 
 load_dotenv( )
 from ask_dcnc import get_aws_keys

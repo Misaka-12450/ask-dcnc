@@ -118,7 +118,7 @@ docker compose up -d
 | Claude 3.5 Sonnet             | June 2024     | 200k tokens       | Reasoning |
 | Claude 3.7 Sonnet             | February 2025 | 200k tokens       | Hybrid    |
 | Amazon Nova Pro               | December 2024 | 300k tokens       | Reasoning |
-| Llama 4 Maverick 17B Instruct | October 2024  | 128k/1M(?) tokens | Fast      |
+| Llama 4 Maverick 17B Instruct | April 2025    | 128k/1M(?) tokens | Fast      |
 
 Although this project is sponsored by RMIT, you may also be interested in the cost of each model for more understanding:
 

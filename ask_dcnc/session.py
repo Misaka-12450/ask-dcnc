@@ -106,7 +106,7 @@ def get_client(
     return client
 
 
-@st.cache_resource( ttl = 45 * 60 )
+@st.cache_resource( ttl = 45 * 60, show_spinner = False )
 def client(
         llm_model: str,
         temperature: float,

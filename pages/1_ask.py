@@ -1,8 +1,12 @@
+"""
+pages/1_ask.py
+"""
+
 import logging
 import os
+import pathlib
 
 import streamlit as st
-import pathlib
 
 __version__ = st.session_state.version
 
@@ -64,16 +68,17 @@ st.title(
 
 with st.sidebar:
     llm_model_options = {
+        "amazon.nova-pro-v1:0": "Amazon Nova Pro",
         "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
         "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
         "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
-        "amazon.nova-pro-v1:0": "Amazon Nova Pro",
         "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
     }
     st.session_state.llm_model = st.selectbox(
         label = "LLM Model",
         options = llm_model_options.keys( ),
         format_func = lambda option: llm_model_options[ option ],
+        index = 2,
     )
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
@@ -157,7 +162,7 @@ if user_question := st.chat_input(
     # Invoke the LLM with the chat history
     with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
         try:
-            response = ask_dcnc.invoke( messages, system_prompt )
+            response = ask_dcnc.invoke( { "messages": messages }, system_prompt )
             st.markdown( response )
         except Exception as e:
             logger.error( e )

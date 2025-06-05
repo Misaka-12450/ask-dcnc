@@ -35,28 +35,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger( __name__ )
 
-# System Prompt
-# TODO: Use a function to generate the system prompt
-try:
-    SYSTEM_PROMPT_PATH = os.path.normpath(
-        os.path.join( BASE_DIR, "prompts/system.md" ),
-    )
-    with open( SYSTEM_PROMPT_PATH, encoding = "utf-8" ) as f:
-        if "answer_style" not in st.session_state:
-            st.session_state.answer_style = "Brief"
-        if "last_answer_style" not in st.session_state:
-            st.session_state.last_answer_style = st.session_state.answer_style
-
-        original_system_prompt = f.read( )
-        system_prompt = original_system_prompt.replace(
-            "{answer_style}",
-            st.session_state.answer_style,
-        )
-    if LOG_TO_CONSOLE:
-        print( "System prompt loaded." )
-except Exception as e:
-    logger.critical( e )
-
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
@@ -79,6 +57,7 @@ with st.sidebar:
         options = llm_model_options.keys( ),
         format_func = lambda option: llm_model_options[ option ],
         index = 2,
+        help = "Some models may be unavailable",
     )
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
@@ -151,23 +130,27 @@ if user_question := st.chat_input(
     )
     messages = st.session_state.messages.copy( )
 
-    # Update the system prompt
-    if st.session_state.answer_style != st.session_state.last_answer_style:
-        system_prompt = original_system_prompt.replace(
-            "{answer_style}",
-            st.session_state.answer_style,
-        )
-        st.session_state.last_answer_style = st.session_state.answer_style
-
     # Invoke the LLM with the chat history
+    # Spinner indicates loading time
+    spinning_chat = st.empty( )  # Placeholder spinner container
+    with spinning_chat.container( ):
+        with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
+            with st.spinner( text = "Thinking...", show_time = True ):
+                try:
+                    response = ask_dcnc.invoke(
+                        messages = { "messages": messages },
+                        system_prompt = ask_dcnc.get_system_prompt( ),
+                    )
+                except Exception as e:
+                    logger.error( e )
+                    st.error( f"\u274C Error: {str( e )}" )
+                    response = ""
+    spinning_chat.empty( )
+
+    # Display the response
     with st.chat_message( name = "assistant", avatar = ASSISTANT_AVATAR, ):
-        try:
-            response = ask_dcnc.invoke( { "messages": messages }, system_prompt )
-            st.markdown( response )
-        except Exception as e:
-            logger.error( e )
-            st.error( f"\u274C Error: {str( e )}" )
-            response = ""
+        st.markdown( response )
+    # TODO: Stream the answer in real time
 
     # Add assistant response to chat history
     if response:

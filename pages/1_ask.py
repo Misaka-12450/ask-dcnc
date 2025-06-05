@@ -68,16 +68,17 @@ st.title(
 
 with st.sidebar:
     llm_model_options = {
-        "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
-        "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
-        "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
         "amazon.nova-pro-v1:0": "Amazon Nova Pro",
-        # "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
+        "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
+        "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
+        "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
+        "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
     }
     st.session_state.llm_model = st.selectbox(
         label = "LLM Model",
         options = llm_model_options.keys( ),
         format_func = lambda option: llm_model_options[ option ],
+        index = 2,
     )
     # Streamlit Pills for Answer Style Selection
     # https://docs.streamlit.io/develop/api-reference/widgets/st.pills

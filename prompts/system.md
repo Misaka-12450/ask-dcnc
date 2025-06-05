@@ -13,14 +13,14 @@
 
 # Answer Formatting for ReAct Agent
 
-1. If data is not needed, skip SQL and indicate to the ReAct agent that this is the final answer using the following format. You MUST include `Final Answer` in the response:
+1. If data is not needed, skip SQL and indicate to the ReAct agent that this is the final answer. You MUST include `Final Answer` in the response. Example format:
 
   ```
   Thought: <Your thought here>
   Final Answer: <Your answer here>
   ```
 
-2. If data is needed, answer in the following format. You MUST include `Action Input` even if empty:
+2. If data is needed you MUST include `Action Input` even if empty. Example format:
 
   ```
   Thought: To find information about the course COSC1111, I will need to query the database tables.
@@ -79,81 +79,14 @@
 
 ## Schema:
 
-```mysql
-create table course_coordinator
-(
-    id       int,
-    name     text null,
-    phone    text null,
-    email    text null,
-    location text null
-);
-
-create table course
-(
-    id            varchar(8) not null,
-    title         text       null,
-    coordinator   int        null,
-    prerequisites mediumtext null,
-    description   mediumtext null,
-    constraint course_course_coordinator_id_fk
-        foreign key (coordinator) references course_coordinator (id)
-);
-
-create table course_code
-(
-    id   varchar(6) not null,
-    code varchar(9) not null,
-    constraint course_codes_courses_id_fk
-        foreign key (id) references course (id)
-);
-
-create table program
-(
-    code  varchar(8) not null,
-    title text       null,
-    url   text       null
-);
-
-create table program_plan
-(
-    plan_code    varchar(16) not null comment 'Program plan URL can be obtained by appending "/{plan_code}" to program.url',
-    program_code varchar(8)  null,
-    alt_title    text        null comment 'Alternative title specific to this program plan',
-    constraint program_plan_program_code_fk
-        foreign key (program_code) references program (code)
-);
-
-create table program_course
-(
-    plan_code varchar(16) not null,
-    year      varchar(1)  not null,
-    courses   text        null,
-    constraint program_courses_program_plans_plan_code_fk
-        foreign key (plan_code) references program_plan (plan_code)
-);
-
-create table program_elective
-(
-    plan_code varchar(16)  not null,
-    type      varchar(8)   not null,
-    title     varchar(255) not null,
-    courses   text         null,
-    constraint program_electives_program_plans_plan_code_fk
-        foreign key (plan_code) references program_plan (plan_code)
-);
+```
+course_coordinator(*id, name, phone, email, location)
+course(*id, title, _coordinator_, prerequisites, description)
+course_code(*id, code)
+program(*code, title, url)
+program_plan(*plan_code, _program_code_, alt_title)
+program_plan_major(*plan_code_, type, title)
+program_plan_minor(*plan_code_, type, title)
 ```
 
-## SQL Checklist:
-
-Before returning SQL, check for common mistakes:
-
-- NOT IN with NULL values
-- UNION when UNION ALL should have been used
-- BETWEEN for exclusive ranges
-- Data type in predicates
-- Properly quoting identifiers
-- \# of arguments for functions
-- Casting to the correct data type
-- Proper columns for joins
 

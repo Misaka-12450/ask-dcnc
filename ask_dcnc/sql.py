@@ -4,28 +4,44 @@ SQL-related functions for LangChain Agent
 """
 
 import os
+
 import pymysql  # noqa F401
 import streamlit as st
+from langchain.agents import AgentType, initialize_agent
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase
-from langchain.agents import initialize_agent, AgentType
 
 MYSQL_HOST = os.getenv( "MYSQL_HOST" )
 MYSQL_PORT = os.getenv( "MYSQL_PORT" )
 MYSQL_DATABASE = os.getenv( "MYSQL_DATABASE" )
 MYSQL_USERNAME = os.getenv( "MYSQL_USERNAME" )
 MYSQL_PASSWORD = os.getenv( "MYSQL_PASSWORD" )
-MYSQL_URI = (
-    f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}")
 
 LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
+
+
+def get_uri(
+        host: str,
+        port: int,
+        database: str,
+        username: str,
+        password: str,
+) -> str:
+    return f"mysql+pymysql://{username}:{password}@{host}:{port}/{database}"
 
 
 # Cache Database Connection
 # https://python.langchain.com/api_reference/community/utilities/langchain_community.utilities.sql_database.SQLDatabase.html
 @st.cache_resource( )
 def get_db( ) -> SQLDatabase:
-    db = SQLDatabase.from_uri( MYSQL_URI, max_string_length = 6144 )
+    uri = get_uri(
+        host = MYSQL_HOST,
+        port = str( MYSQL_PORT ),
+        database = MYSQL_DATABASE,
+        username = MYSQL_USERNAME,
+        password = MYSQL_PASSWORD,
+    )
+    db = SQLDatabase.from_uri( uri, max_string_length = 6144 )
     if LOG_TO_CONSOLE:
         print(
             f"Database loaded: {MYSQL_DATABASE}, tables: {db.get_usable_table_names( )}",

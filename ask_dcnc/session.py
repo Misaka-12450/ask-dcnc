@@ -1,14 +1,27 @@
+"""
+ask_dcnc/session.py
+Bedrock-related functions
+"""
+
 import logging
 import os
 
 import boto3
 import streamlit as st
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_aws import ChatBedrock
-
-from .sql import get_sql_agent
+from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from langchain_community.utilities import SQLDatabase
+from langgraph.prebuilt import create_react_agent
 
 BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
+LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
+
+MYSQL_HOST = os.getenv( "MYSQL_HOST" )
+MYSQL_PORT = os.getenv( "MYSQL_PORT" )
+MYSQL_DATABASE = os.getenv( "MYSQL_DATABASE" )
+MYSQL_USERNAME = os.getenv( "MYSQL_USERNAME" )
+MYSQL_PASSWORD = os.getenv( "MYSQL_PASSWORD" )
+MYSQL_URI = f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
 
 logger = logging.getLogger( __name__ )
 
@@ -23,8 +36,6 @@ COGNITO_PASSWORD = os.getenv( "COGNITO_PASSWORD" )
 # LLM
 BEDROCK_TOP_P = os.getenv( "BEDROCK_TOP_P" )
 BEDROCK_MAX_TOKENS = os.getenv( "BEDROCK_MAX_TOKENS" )
-
-LOG_TO_CONSOLE = os.getenv( "LOG_TO_CONSOLE" )
 
 
 # Cache AWS credentials using Cognito in Streamlit
@@ -125,25 +136,32 @@ def invoke( messages, system_prompt: str ) -> str:
         temperature = st.session_state.llm_temperature,
     )
 
-    langchain_messages = [ ]
-    langchain_messages.append( SystemMessage( content = system_prompt ) )
-    if LOG_TO_CONSOLE:
-        print( f"System message: {system_prompt}" )
-    for message in messages:
-        role = message.get( "role" )
-        content = message.get( "content", "" )
-        if role == "user":
-            langchain_messages.append( HumanMessage( content = content ) )
-            if LOG_TO_CONSOLE:
-                print( f"User message: {content}" )
-        elif role == "assistant":
-            langchain_messages.append( AIMessage( content = content ) )
-            if LOG_TO_CONSOLE:
-                print( f"Assistant message: {content}" )
+    db = SQLDatabase.from_uri(
+        MYSQL_URI,
+        max_string_length = 6144, )
 
-    agent = get_sql_agent( llm )
+    tools = SQLDatabaseToolkit(
+        db = db,
+        llm = llm,
+        verbose = LOG_TO_CONSOLE,
+    ).get_tools( )
 
-    response = agent.run( input = langchain_messages )
     if LOG_TO_CONSOLE:
-        print( f"Response message: {response}" )
-    return response
+        for tool in tools:
+            print( f"Tool: {tool.name}, Description: {tool.description}" )
+
+    agent = create_react_agent(
+        model = llm,
+        tools = tools,
+        prompt = system_prompt,
+    )
+
+    # agent.invoke() returns a json
+    answer = agent.invoke(
+        input = messages,
+    )[ "messages" ][ -1 ].content
+
+    if "Final Answer:" in answer:
+        answer = answer.split( "Final Answer:", 1 )[ 1 ].strip( )
+
+    return answer

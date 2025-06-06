@@ -44,18 +44,34 @@ git clone https://www.github.com/misaka-12450/ask-dcnc.git
 
 Rename the `.env.sample` file in the repository to `.env` and fill in the blanks.
 
-#### Setup Virtual Environment and Install Dependencies
+#### Setup Virtual Environment 
 
 ```bash
 python -m venv .venv
+```
+
+##### Windows
+
+```bash
 .\.venv\Scripts\activate
+```
+
+##### UNIX-like
+
+```bash
+source .venv/bin/activate
+```
+
+#### Install Dependencies
+
+```bash
 pip install .
 ```
 
 #### Run!
 
 ```bash
-python streamlit run Chat.py
+python streamlit run streamlit_app.py
 ```
 
 ### 🚢 Run on Docker

@@ -7,19 +7,19 @@ with open( "pyproject.toml", "r", encoding = "utf-8" ) as f:
 __version__ = st.session_state.version
 
 load_dotenv( )
-from ask_dcnc import get_aws_keys
+import ask_dcnc
 
 pg = st.navigation(
     [
         # Ask Advisor Page
         st.Page(
-            "pages/1_ask.py",
+            page = "pages/1_ask.py",
             title = "Ask Advisor",
             icon = ":material/question_answer:",
         ),
         # About Page
         st.Page(
-            "pages/2_about.py",
+            page = "pages/2_about.py",
             title = "About",
             icon = ":material/info:",
         ),
@@ -43,4 +43,4 @@ st.logo( "static/images/rmit_university_logo_144p.png" )
 
 pg.run( )
 
-get_aws_keys( )  # Obtain AWS keys first thing to speed up response time
+ask_dcnc.get_aws_keys( )  # Obtain AWS keys first thing to speed up response time

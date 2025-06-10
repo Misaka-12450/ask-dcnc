@@ -1,4 +1,6 @@
 */__pycache__/
 .env
-.idea/
+/.idea/
 /logs/*
+/.venv/
+/*.egg-info/

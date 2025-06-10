@@ -1,5 +1,8 @@
-import os
+"""
+pages/2_about.py
+"""
 
+import os
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -29,14 +32,6 @@ components.html(
        aria-label="GitHub">
         GitHub Repository
     </a>
-    """,
-)
-
-st.markdown(
-    """
-    > **Note**
-    >
-    > The GitHub repository is currently private.
     """,
 )
 

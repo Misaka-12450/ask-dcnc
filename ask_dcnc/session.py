@@ -12,7 +12,6 @@ from langchain_community.utilities import SQLDatabase
 from langgraph.prebuilt import create_react_agent
 from loguru import logger
 import loguru_config  # noqa: F401
-from langchain_core.messages import AIMessage
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 
@@ -68,7 +67,7 @@ def get_aws_keys() -> dict:
     )
 
     creds = creds_response["Credentials"]
-    logger.info(f"Credentials obtained: {creds}")
+    logger.success(f"AWS credentials obtained")
     return creds
 
 
@@ -93,10 +92,11 @@ def client(
                 "top_p": float(BEDROCK_TOP_P),
             },
         )
-        logger.info(f"LLM loaded: {llm_model}")
-        logger.info(f"LLM temperature: {temperature}")
-        logger.info(f"LLM top P: {BEDROCK_TOP_P}")
-        logger.info(f"LLM max Tokens: {BEDROCK_MAX_TOKENS}")
+        logger.success("LLM client loaded.")
+        logger.debug(f"LLM model: {llm_model}")
+        logger.debug(f"LLM temperature: {temperature}")
+        logger.debug(f"LLM top P: {BEDROCK_TOP_P}")
+        logger.debug(f"LLM max Tokens: {BEDROCK_MAX_TOKENS}")
     except Exception as e:
         logger.error(f"Error loading LLM: {e}")
         if e.response["Error"]["Code"] == "ExpiredTokenException":
@@ -123,8 +123,9 @@ def get_agent(system_prompt: str):
         verbose=True,
     ).get_tools()
 
+    logger.success("SQLDatabaseToolkit loaded.")
     for tool in tools:
-        logger.info(f"Tool: {tool.name}, Description: {tool.description}")
+        logger.debug(f"Tool: {tool.name}, Description: {tool.description}")
 
     return create_react_agent(
         model=llm,

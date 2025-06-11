@@ -25,6 +25,16 @@ BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Initialise thought history
+if "thoughts" not in st.session_state:
+    st.session_state.thoughts = []
+if "thought_times" not in st.session_state:
+    st.session_state.thought_times = []
+
 st.title(body="AskDCNC", anchor=False)
 
 # TODO: Persistent state for LLM model, answer style, and temperature
@@ -83,16 +93,6 @@ with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
         "Hello! I am the DCNC Program and Course Advisor. "
         "You can ask me about any RMIT program or course.",
     )
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Initialise thought history
-if "thoughts" not in st.session_state:
-    st.session_state.thoughts = []
-if "thought_times" not in st.session_state:
-    st.session_state.thought_times = []
 
 # Display chat and thought history
 i = 0

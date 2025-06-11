@@ -12,6 +12,7 @@ from langchain_community.utilities import SQLDatabase
 from langgraph.prebuilt import create_react_agent
 from loguru import logger
 import loguru_config  # noqa: F401
+from langchain_core.messages import AIMessage
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 
@@ -106,8 +107,7 @@ def client(
     return llm
 
 
-# https://python.langchain.com/docs/concepts/messages/
-def invoke(messages, system_prompt: str) -> str:
+def invoke(system_prompt: str):
     llm = client(
         llm_model=st.session_state.llm_model,
         temperature=st.session_state.llm_temperature,
@@ -126,22 +126,8 @@ def invoke(messages, system_prompt: str) -> str:
     for tool in tools:
         logger.info(f"Tool: {tool.name}, Description: {tool.description}")
 
-    agent = create_react_agent(
+    return create_react_agent(
         model=llm,
         tools=tools,
         prompt=system_prompt,
     )
-
-    # agent.invoke() returns a json
-    answer = agent.invoke(
-        input=messages,
-    )
-    for a in answer:
-        logger.info(a)
-
-    final_answer = answer["messages"][-1].content
-
-    if "Final Answer:" in final_answer:
-        final_answer = final_answer.split("Final Answer:", 1)[1].strip()
-
-    return final_answer

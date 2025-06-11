@@ -6,9 +6,9 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-BASE_DIR = os.path.join( os.path.dirname( __file__ ), ".." )
-with open( os.path.join( BASE_DIR, "readme.md" ), encoding = "utf-8" ) as f:
-    readme = f.read( )
+BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
+with open(os.path.join(BASE_DIR, "readme.md"), encoding="utf-8") as f:
+    readme = f.read()
 
 with st.sidebar:
     st.info(
@@ -17,7 +17,7 @@ with st.sidebar:
 
         Developed by Haley Wong
 
-        Powered by Beer 🍺 and the Magic of AI ✨""",
+        Powered by the Magic of AI ✨""",
     )
 
 components.html(
@@ -35,4 +35,4 @@ components.html(
     """,
 )
 
-st.markdown( readme )
+st.markdown(readme)

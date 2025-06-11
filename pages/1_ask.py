@@ -9,6 +9,8 @@ import os
 import pathlib
 import streamlit as st
 
+from langchain_core.messages import AIMessage
+
 __version__ = st.session_state.version
 
 # Check if running in Docker
@@ -44,8 +46,7 @@ with st.sidebar:
         index=2,
         help="Some models may be unavailable",
     )
-    # Streamlit Pills for Answer Style Selection
-    # https://docs.streamlit.io/develop/api-reference/widgets/st.pills
+
     answer_style_options = {
         "Brief": ":material/summarize: Brief",
         "Comprehensive": ":material/receipt_long: Comprehensive",
@@ -67,6 +68,7 @@ with st.sidebar:
         format_func=lambda option: llm_temperature_options[option],
         default=0.5,
     )
+
     st.markdown("")
     st.info("Version " + __version__)
 
@@ -79,34 +81,39 @@ with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
 
 # Initialize chat history
 if "messages" not in st.session_state:
-    try:
-        st.session_state.messages = []
-    except Exception as e:
-        logger.error(e)
-        st.error(f"\u274C Error: {str(e)}")
+    st.session_state.messages = []
 
-# Display chat messages from history on app rerun
-try:
-    for message in st.session_state.messages:
-        with st.chat_message(
-                name=message["role"],
-                avatar=(
-                        ASSISTANT_AVATAR if message["role"] == "assistant"
-                        else USER_AVATAR
-                ),
-        ):
-            st.markdown(message["content"])
-except Exception as e:
-    logger.error(e)
-    st.error(f"\u274C Error: {str(e)}")
+# Initialise thought history
+if "expander_index" not in st.session_state:
+    st.session_state.thought_index = 0
+if "thoughts" not in st.session_state:
+    st.session_state.thoughts = []
+
+# Display chat and thought history
+i = 0
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        avatar = USER_AVATAR
+    else:
+        avatar = ASSISTANT_AVATAR
+    with st.chat_message(
+            name=message["role"],
+            avatar=avatar
+    ):
+        if message["role"] == "assistant":
+            st.expander("Thoughts").write(st.session_state.thoughts[i])
+            i += 1
+        st.markdown(message["content"])
 
 # React to user input
 if user_question := st.chat_input(
         "What's your question?",
 ):
+    logger.debug(f"User question: {user_question}")
+
     # Returns user input
     # Display user message in chat message container
-    with st.chat_message(name="user", avatar=USER_AVATAR, ):
+    with st.chat_message(name="user", avatar=USER_AVATAR):
         st.markdown(user_question)
 
     # Add user message to chat history
@@ -115,30 +122,30 @@ if user_question := st.chat_input(
     )
     messages = st.session_state.messages.copy()
 
-    # Invoke the LLM with the chat history
-    # Spinner indicates loading time
-    spinning_chat = st.empty()  # Placeholder spinner container
-    with spinning_chat.container():
-        with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR, ):
-            with st.spinner(text="Thinking...", show_time=True):
-                try:
-                    response = ask_dcnc.invoke(
-                        messages={"messages": messages},
-                        system_prompt=ask_dcnc.get_system_prompt(),
-                    )
-                except Exception as e:
-                    logger.error(e)
-                    st.error(f"\u274C Error: {str(e)}")
-                    response = ""
-    spinning_chat.empty()
+    agent = ask_dcnc.get_agent(
+        system_prompt=ask_dcnc.get_system_prompt(),
+    )
 
-    # Display the response
-    with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR, ):
+    stream = agent.stream(
+        input={"messages": messages},
+        stream_mode="values",
+    )
+
+    # Thoughts expander box
+    with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
+        st.write("Thinking")
+        with st.expander("Thoughts"):
+            for step in stream:
+                if "messages" in step:
+                    message = step['messages'][-1]
+                    if isinstance(message, AIMessage):
+                        response = message.content
+                        st.write(response)
+                        st.session_state.thoughts.append(response)
+                        st.session_state.thought_index += 1
+
+        # Actual chat display of the response
         st.markdown(response)
-    # TODO: Stream the answer in real time
 
-    # Add assistant response to chat history
     if response:
-        st.session_state.messages.append(
-            {"role": "assistant", "content": response},
-        )
+        st.session_state.messages.append({"role": "assistant", "content": response})

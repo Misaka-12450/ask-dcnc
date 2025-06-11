@@ -83,15 +83,26 @@ with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat messages from history on app rerun
+# Initialise thought history
+if "expander_index" not in st.session_state:
+    st.session_state.thought_index = 0
+if "thoughts" not in st.session_state:
+    st.session_state.thoughts = []
+
+# Display chat and thought history
+i = 0
 for message in st.session_state.messages:
+    if message["role"] == "user":
+        avatar = USER_AVATAR
+    else:
+        avatar = ASSISTANT_AVATAR
     with st.chat_message(
             name=message["role"],
-            avatar=(
-                    ASSISTANT_AVATAR if message["role"] == "assistant"
-                    else USER_AVATAR
-            ),
+            avatar=avatar
     ):
+        if message["role"] == "assistant":
+            st.expander("Thoughts").write(st.session_state.thoughts[i])
+            i += 1
         st.markdown(message["content"])
 
 # React to user input
@@ -111,30 +122,7 @@ if user_question := st.chat_input(
     )
     messages = st.session_state.messages.copy()
 
-    # Invoke the LLM with the chat history
-    # Spinner indicates loading time
-    # spinning_chat = st.empty()  # Placeholder spinner container
-    # with spinning_chat.container():
-    #     with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
-    #         with st.spinner(text="Thinking...", show_time=True):
-    #             response = ask_dcnc.invoke(
-    #                 messages={"messages": messages},
-    #                 system_prompt=ask_dcnc.get_system_prompt(),
-    #             )
-    # spinning_chat.empty()
-    #
-    # # Display the response
-    # with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
-    #     st.markdown(response)
-    # # TODO: Stream the answer in real time
-    #
-    # # Add assistant response to chat history
-    # if response:
-    #     st.session_state.messages.append(
-    #         {"role": "assistant", "content": response},
-    #     )
-
-    agent = ask_dcnc.invoke(
+    agent = ask_dcnc.get_agent(
         system_prompt=ask_dcnc.get_system_prompt(),
     )
 
@@ -143,16 +131,20 @@ if user_question := st.chat_input(
         stream_mode="values",
     )
 
+    # Thoughts expander box
     with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
-        with st.spinner(text="Thinking...", show_time=True):
-            with st.expander("Thoughts"):
-                for step in stream:
-                    if "messages" in step:
-                        for message in step['messages']:
-                            if isinstance(message, AIMessage):
-                                response = message.content
-                                st.write(response)
+        st.write("Thinking")
+        with st.expander("Thoughts"):
+            for step in stream:
+                if "messages" in step:
+                    message = step['messages'][-1]
+                    if isinstance(message, AIMessage):
+                        response = message.content
+                        st.write(response)
+                        st.session_state.thoughts.append(response)
+                        st.session_state.thought_index += 1
 
+        # Actual chat display of the response
         st.markdown(response)
 
     if response:

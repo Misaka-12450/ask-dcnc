@@ -1,5 +1,5 @@
 from .session import (
-    invoke,
+    get_agent,
     get_aws_keys,
 )
 
@@ -8,7 +8,7 @@ from .prompt import (
 )
 
 __all__ = [
-    "invoke",
+    "get_agent",
     "get_aws_keys",
     "get_system_prompt",
 ]

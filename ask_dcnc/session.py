@@ -107,7 +107,7 @@ def client(
     return llm
 
 
-def invoke(system_prompt: str):
+def get_agent(system_prompt: str):
     llm = client(
         llm_model=st.session_state.llm_model,
         temperature=st.session_state.llm_temperature,

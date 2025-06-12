@@ -55,17 +55,17 @@ with st.sidebar:
     st.write("")
 
     llm_model_options = {
-        "amazon.nova-pro-v1:0": "Amazon Nova Pro",
+        # "amazon.nova-pro-v1:0": "Amazon Nova Pro",
         "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
         "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
-        "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
-        "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
+        # "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
+        # "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
     }
     st.session_state.llm_model = st.selectbox(
         label="LLM Model",
         options=llm_model_options.keys(),
         format_func=lambda option: llm_model_options[option],
-        index=2,
+        index=1,
         help="Claude 3.5 Sonnet is recommended for accuracy. Some models may be unavailable."
     )
 
@@ -99,7 +99,9 @@ with st.sidebar:
 with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
     st.markdown(
         "Hello! I am the DCNC Program and Course Advisor. "
-        "You can ask me about any RMIT program or course.",
+        "You can ask me about any RMIT program or course.\n\n"
+        "I am powered by AI, so I can make mistakes. "
+        "Please double check the information using the links provided.",
     )
 
 # Display chat and thought history

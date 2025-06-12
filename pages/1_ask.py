@@ -25,7 +25,7 @@ BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
-# Initialize chat history
+# Initialise chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -46,6 +46,14 @@ st.title(body="AskDCNC", anchor=False)
 #     st.session_state.llm_temperature = 0.5
 
 with st.sidebar:
+    if st.button(label=":material/edit_note: New Chat", type="primary", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.thoughts = []
+        st.session_state.thought_times = []
+        st.rerun()
+
+    st.write("")
+
     llm_model_options = {
         "amazon.nova-pro-v1:0": "Amazon Nova Pro",
         "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",

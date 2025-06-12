@@ -37,13 +37,13 @@ if "thought_times" not in st.session_state:
 
 st.title(body="AskDCNC", anchor=False)
 
-# TODO: Persistent state for LLM model, answer style, and temperature
-# if "llm_model" not in st.session_state:
-#     st.session_state.llm_model = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-# if "answer_style" not in st.session_state:
-#     st.session_state.answer_style = "Brief"
-# if "llm_temperature" not in st.session_state:
-#     st.session_state.llm_temperature = 0.5
+# Persistent state for LLM model, answer style, and temperature
+if "llm_model_index" not in st.session_state:
+    st.session_state.llm_model_index = 1
+if "answer_style" not in st.session_state:
+    st.session_state.answer_style = "Brief"
+if "llm_temperature" not in st.session_state:
+    st.session_state.llm_temperature = 0.5
 
 with st.sidebar:
     if st.button(label=":material/edit_note: New Chat", type="primary", use_container_width=True):
@@ -65,9 +65,10 @@ with st.sidebar:
         label="LLM Model",
         options=llm_model_options.keys(),
         format_func=lambda option: llm_model_options[option],
-        index=1,
+        index=st.session_state.llm_model_index,
         help="Claude 3.5 Sonnet is recommended for accuracy. Some models may be unavailable."
     )
+    st.session_state.llm_model_index = list(llm_model_options.keys()).index(st.session_state.llm_model)
 
     answer_style_options = {
         "Brief": ":material/summarize: Brief",

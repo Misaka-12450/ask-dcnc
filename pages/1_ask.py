@@ -25,7 +25,7 @@ BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"
 
-# Initialize chat history
+# Initialise chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -37,29 +37,38 @@ if "thought_times" not in st.session_state:
 
 st.title(body="AskDCNC", anchor=False)
 
-# TODO: Persistent state for LLM model, answer style, and temperature
-# if "llm_model" not in st.session_state:
-#     st.session_state.llm_model = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-# if "answer_style" not in st.session_state:
-#     st.session_state.answer_style = "Brief"
-# if "llm_temperature" not in st.session_state:
-#     st.session_state.llm_temperature = 0.5
+# Persistent state for LLM model, answer style, and temperature
+if "llm_model_index" not in st.session_state:
+    st.session_state.llm_model_index = 1
+if "answer_style" not in st.session_state:
+    st.session_state.answer_style = "Brief"
+if "llm_temperature" not in st.session_state:
+    st.session_state.llm_temperature = 0.5
 
 with st.sidebar:
+    if st.button(label=":material/edit_note: New Chat", type="primary", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.thoughts = []
+        st.session_state.thought_times = []
+        st.rerun()
+
+    st.write("")
+
     llm_model_options = {
-        "amazon.nova-pro-v1:0": "Amazon Nova Pro",
+        # "amazon.nova-pro-v1:0": "Amazon Nova Pro",
         "anthropic.claude-3-haiku-20240307-v1:0": "Claude 3 Haiku",
         "anthropic.claude-3-5-sonnet-20240620-v1:0": "Claude 3.5 Sonnet",
-        "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
-        "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
+        # "anthropic.claude-3-7-sonnet-20250219-v1:0": "Claude 3.7 Sonnet",
+        # "us.meta.llama4-maverick-17b-instruct-v1:0": "Llama 4 Maverick 17B Instruct",
     }
     st.session_state.llm_model = st.selectbox(
         label="LLM Model",
         options=llm_model_options.keys(),
         format_func=lambda option: llm_model_options[option],
-        index=2,
+        index=st.session_state.llm_model_index,
         help="Claude 3.5 Sonnet is recommended for accuracy. Some models may be unavailable."
     )
+    st.session_state.llm_model_index = list(llm_model_options.keys()).index(st.session_state.llm_model)
 
     answer_style_options = {
         "Brief": ":material/summarize: Brief",
@@ -91,7 +100,9 @@ with st.sidebar:
 with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
     st.markdown(
         "Hello! I am the DCNC Program and Course Advisor. "
-        "You can ask me about any RMIT program or course.",
+        "You can ask me about any RMIT program or course.\n\n"
+        "I am powered by AI, so I can make mistakes. "
+        "Please double check the information using the links provided.",
     )
 
 # Display chat and thought history
@@ -104,7 +115,7 @@ for message in st.session_state.messages:
     with st.chat_message(name=message["role"], avatar=avatar):
         if message["role"] == "assistant":
             if st.session_state.thoughts[i][0]:
-                with st.expander(get_time_str(st.session_state.thought_times[i])):
+                with st.expander(label=get_time_str(st.session_state.thought_times[i])):
                     for thought in st.session_state.thoughts[i]:
                         st.write(thought)
             i += 1
@@ -115,7 +126,7 @@ if user_question := st.chat_input(
         "What's your question?",
 ):
     start_time = datetime.now()
-    logger.success(f"User question: {user_question}")
+    logger.debug(f"User question: {user_question}")
 
     # Display user message in chat message container
     with st.chat_message(name="user", avatar=USER_AVATAR):
@@ -144,14 +155,19 @@ if user_question := st.chat_input(
     st.session_state.thoughts.append([])
     with temp_container.container():
         with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
-            with st.spinner("Thinking", show_time=True):
-                with st.expander("Thoughts"):
+            with st.spinner(text="Thinking", show_time=True):
+                with st.expander(label="Thoughts", expanded=True):
                     for step in stream:
                         if "messages" in step:
                             message = step['messages'][-1]
                             logger.debug(message)
                             if isinstance(message, AIMessage):
                                 response = message.content
+
+                                # Trim "Thought:" prefix
+                                if response.startswith("Thought:"):
+                                    thought = response[len("Thought:"):].strip()
+
                                 st.write(response)
                                 st.session_state.thoughts[-1].append(response)
 
@@ -162,7 +178,7 @@ if user_question := st.chat_input(
 
     # Final response
     if response:
-        # Trim the "Final Answer:" part if it exists
+        # Trim "Final Answer:" prefix
         if "Final Answer:" in response:
             responses = response.split("Final Answer:")
             st.session_state.thoughts[-1].append(responses[0].strip())
@@ -170,7 +186,7 @@ if user_question := st.chat_input(
 
         # Add the final response to the chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-        logger.success("Assistant response:\n" + response)
+        logger.debug("Assistant response:\n" + response)
 
     # Display the thoughts and final response in the chat box
     end_time = datetime.now()
@@ -178,7 +194,7 @@ if user_question := st.chat_input(
     with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
         time_diff = end_time - start_time
         if st.session_state.thoughts[-1][0]:
-            with st.expander(get_time_str(time_diff)):
+            with st.expander(label=get_time_str(time_diff)):
                 for thought in st.session_state.thoughts[-1]:
                     st.write(thought)
         st.markdown(response)

@@ -104,7 +104,7 @@ for message in st.session_state.messages:
     with st.chat_message(name=message["role"], avatar=avatar):
         if message["role"] == "assistant":
             if st.session_state.thoughts[i][0]:
-                with st.expander(get_time_str(st.session_state.thought_times[i])):
+                with st.expander(label=get_time_str(st.session_state.thought_times[i])):
                     for thought in st.session_state.thoughts[i]:
                         st.write(thought)
             i += 1
@@ -115,7 +115,7 @@ if user_question := st.chat_input(
         "What's your question?",
 ):
     start_time = datetime.now()
-    logger.success(f"User question: {user_question}")
+    logger.debug(f"User question: {user_question}")
 
     # Display user message in chat message container
     with st.chat_message(name="user", avatar=USER_AVATAR):
@@ -144,14 +144,19 @@ if user_question := st.chat_input(
     st.session_state.thoughts.append([])
     with temp_container.container():
         with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
-            with st.spinner("Thinking", show_time=True):
-                with st.expander("Thoughts"):
+            with st.spinner(text="Thinking", show_time=True):
+                with st.expander(label="Thoughts", expanded=True):
                     for step in stream:
                         if "messages" in step:
                             message = step['messages'][-1]
                             logger.debug(message)
                             if isinstance(message, AIMessage):
                                 response = message.content
+
+                                # Trim "Thought:" prefix
+                                if response.startswith("Thought:"):
+                                    thought = response[len("Thought:"):].strip()
+
                                 st.write(response)
                                 st.session_state.thoughts[-1].append(response)
 
@@ -162,7 +167,7 @@ if user_question := st.chat_input(
 
     # Final response
     if response:
-        # Trim the "Final Answer:" part if it exists
+        # Trim "Final Answer:" prefix
         if "Final Answer:" in response:
             responses = response.split("Final Answer:")
             st.session_state.thoughts[-1].append(responses[0].strip())
@@ -170,7 +175,7 @@ if user_question := st.chat_input(
 
         # Add the final response to the chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-        logger.success("Assistant response:\n" + response)
+        logger.debug("Assistant response:\n" + response)
 
     # Display the thoughts and final response in the chat box
     end_time = datetime.now()
@@ -178,7 +183,7 @@ if user_question := st.chat_input(
     with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
         time_diff = end_time - start_time
         if st.session_state.thoughts[-1][0]:
-            with st.expander(get_time_str(time_diff)):
+            with st.expander(label=get_time_str(time_diff)):
                 for thought in st.session_state.thoughts[-1]:
                     st.write(thought)
         st.markdown(response)

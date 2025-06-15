@@ -11,7 +11,6 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase
 from langgraph.prebuilt import create_react_agent
 from loguru import logger
-import loguru_config  # noqa: F401
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 

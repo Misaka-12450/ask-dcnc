@@ -1,8 +1,9 @@
 __pycache__/
 *.py[cod]
-.env
-*.env
-.idea/
-logs/
-*.log
-scripts/
+/.env
+/.idea/
+/logs/
+/scripts/
+/data/
+/.venv/
+/build/

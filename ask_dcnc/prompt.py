@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from loguru import logger
-import loguru_config  # noqa: F401
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 

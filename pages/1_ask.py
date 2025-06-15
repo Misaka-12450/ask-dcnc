@@ -4,13 +4,13 @@ Main page where users can ask AI questions
 """
 
 from loguru import logger
-import loguru_config  # noqa: F401
 import os
 import pathlib
 import streamlit as st
 from datetime import datetime
 from langchain_core.messages import AIMessage
 from ask_dcnc import get_agent, get_system_prompt, get_time_str
+import sys
 
 __version__ = st.session_state.version
 
@@ -21,6 +21,20 @@ if not pathlib.Path("/.dockerenv").exists():
     load_dotenv()
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
+
+logger.remove()
+
+logger.add(
+    sink=sys.stderr,
+    level="DEBUG"
+)
+
+logger.add(
+    sink="logs/ask-dcnc.log",
+    rotation="1MB",
+    retention="30 days",
+    level="DEBUG"
+)
 
 USER_AVATAR = "🧑‍🎓"
 ASSISTANT_AVATAR = "static/images/logo_96p.png"

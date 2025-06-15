@@ -9,7 +9,7 @@ courses using official program plans and course guides.
 - AWS Bedrock backend using Cognito for authentication
 - MariaDB database
 - Contextual memory provided by LangChain [Messages](https://python.langchain.com/docs/concepts/messages/)
-- Langchain [SQLDatabaseToolkit](https://python.langchain.com/api_reference/community/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html) and [zero-shot Agent](https://python.langchain.com/api_reference/langchain/agents/langchain.agents.agent.Agent.html)
+- [Langchain SQLDatabaseToolkit](https://langchain-ai.github.io/langgraph/tutorials/sql-agent) and [LangGraph ReAct Agent](https://langchain-ai.github.io/langgraph/reference/prebuilt/#langgraph.prebuilt.chat_agent_executor.create_react_agent)
 - Dynamic system prompt features
 
 ### Programs
@@ -24,11 +24,18 @@ courses using official program plans and course guides.
 - Course codes (if any)
 - Course coordinator details
 - Course prerequisites
-- Course description
+- Course descriptions
 
 ## Run It Yourself
 
 You can run this chatbot locally with a [Python virtual environment](#run-with-python) or [Docker](#run-on-docker).
+
+Before you do that, you need to reconstruct the database.
+
+### 🗄️ Database Construction
+
+Create a MySQL or MariaDB database and import the `data/dcnc.sql` file in the repository. You will need to fill in the
+database connection details later.
 
 ### 🐍 Run with Python
 
@@ -37,14 +44,15 @@ You can run this chatbot locally with a [Python virtual environment](#run-with-p
 Open a terminal and go to the folder you want to clone the repository into, then run:
 
 ```bash
-git clone https://www.github.com/misaka-12450/ask-dcnc.git
+git clone https://www.github.com/misaka-12450/ask-dcnc
 ```
 
-#### Add your Cognito Credentials
+#### Add your Credentials
 
-Rename the `.env.sample` file in the repository to `.env` and fill in the blanks.
+Rename the `.env.sample` file in the repository to `.env` and fill in the blanks. Remember to fill in both the Cognito
+and database credentials.
 
-#### Setup Virtual Environment 
+#### Setup Virtual Environment
 
 ```bash
 python -m venv .venv
@@ -80,7 +88,8 @@ python streamlit run streamlit_app.py
 
 #### Docker Run
 
-Replace REPO_PATH with the path to the path you want to mount the repository to, and replace the environment variables with your own values.
+Replace REPO_PATH with the path to the path you want to mount the repository to, and replace the environment variables
+with your own values.
 
 ```bash
 docker run ghcr.io/misaka-12450/ask-dcnc:latest \
@@ -120,29 +129,9 @@ on how to set up your tunnel and get the token:
 > In order to restrict access to your app, you should also hide your hostname
 > behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
 
-[Clone the repository](#clone-the-repository) and fill in the `.env` file with your values. Then run Docker Compose:
+[Clone the repository](#clone-the-repository) and fill in the environment variables with your values. Then run Docker
+Compose:
 
 ```bash
 docker compose up -d
 ```
-
-## Model Comparison
-
-| Model                         | Release Date  | Context Window    | Speed     |
-|-------------------------------|---------------|-------------------|-----------|
-| Claude 3 Haiku                | March 2024    | 200k tokens       | Fast      |
-| Claude 3.5 Sonnet             | June 2024     | 200k tokens       | Reasoning |
-| Claude 3.7 Sonnet             | February 2025 | 200k tokens       | Hybrid    |
-| Amazon Nova Pro               | December 2024 | 300k tokens       | Reasoning |
-| Llama 4 Maverick 17B Instruct | April 2025    | 128k/1M(?) tokens | Fast      |
-
-Although this project is sponsored by RMIT, you may also be interested in the cost of each model for more understanding:
-
-| Anthropic models     | Price per 1,000 input tokens | Price per 1,000 output tokens | Price per 1,000 input tokens (batch) | Price per 1,000 output tokens (batch) | Price per 1,000 input tokens (cache write) | Price per 1,000 input tokens (cache read) |
-|----------------------|------------------------------|-------------------------------|--------------------------------------|---------------------------------------|--------------------------------------------|-------------------------------------------|
-| Claude 3 Haiku       | $0.00025                     | $0.00125                      | $0.000125                            | $0.000625                             | N/A                                        | N/A                                       | 
-| Claude 3.5 Sonnet    | $0.003                       | $0.015                        | $0.0015                              | $0.0075                               | $0.00375                                   | $0.0003                                   | 
-| Claude 3.7 Sonnet    | $0.003                       | $0.015                        | N/A                                  | N/A                                   | $0.00375                                   | $0.0003                                   |
-| Amazon Nova Pro      | $0.0008                      | $0.0032                       | $0.0004                              | $0.0016                               | N/A                                        | $0.0002                                   |
-| Llama 4 Maverick 17B | $0.00024                     | $0.00097                      | $0.00012                             | $0.000485                             | N/A                                        | N/A                                       |
-

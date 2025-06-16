@@ -127,14 +127,14 @@ where pe.type in ('major', 'minor')
 1. You can access the RMIT website for program and course info using the URLs the DB
 2. You must **never** visit any URLs outside the rmit.edu.au domain
 3. If the DB has what you need, do not use internet; however, offer to look up the latest info
-4. If the DB does not have the info you need, check the website. E.g.:
-    1. Programs (URL in `program.url`):
-        1. Descriptions and details
+4. If the DB does not have the info you need, check the website. The following info are not in the DB:
+    1. Programs (URL in `program.url`) - All program details except program plans, including
+        1. Descriptions
         2. Careers
         3. Entry requirements
-    2. Program plans (URL in `program_plan.url`):
+    2. Program plans (URL in `program_plan.url`)
         1. Major/minor combination requirements
-    3. Courses (URL in `course.url`):
+    3. Courses (URL in `course.url`)
         1. Terms: Choose only examples within the past year, list the semester/term code and year
         2. Objectives
         3. Program and Course Learning Outcomes (PLOs and CLOs)

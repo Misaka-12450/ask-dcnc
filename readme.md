@@ -42,8 +42,7 @@ git clone https://www.github.com/misaka-12450/ask-dcnc
 
 #### Add your Credentials
 
-Rename the `.env.sample` file in the repository to `.env` and fill in the blanks. Remember to fill in both the Cognito
-and database credentials.
+Rename the `.env.sample` file in the repository to `.env` and fill in the blanks.
 
 #### Setup Virtual Environment
 
@@ -81,8 +80,7 @@ python streamlit run streamlit_app.py
 
 #### Docker Run
 
-Replace REPO_PATH with the path to the path you want to mount the repository to, and replace the environment variables
-with your own values.
+Replace REPO_PATH with the path to the path you want to mount the repository to, and replace the environment variables with your own values.
 
 ```bash
 docker run ghcr.io/misaka-12450/ask-dcnc:latest \
@@ -93,7 +91,9 @@ docker run ghcr.io/misaka-12450/ask-dcnc:latest \
   -e AWS_USER_POOL_ID='YOUR_AWS_USER_POOL_ID' \
   -e AWS_APP_CLIENT_ID='YOUR_AWS_APP_CLIENT_ID' \
   -e COGNITO_USERNAME='YOUR_COGNITO_USERNAME' \
-  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' 
+  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' \
+  -e BEDROCK_TOP_P=0.9 \
+  -e BEDROCK_MAX_TOKENS=4096
 ```
 
 You can access the app at:

@@ -9,6 +9,8 @@ services:
       AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}
       COGNITO_USERNAME: ${COGNITO_USERNAME}
       COGNITO_PASSWORD: ${COGNITO_PASSWORD}
+      BEDROCK_TOP_P: 0.9
+      BEDROCK_MAX_TOKENS: 4096
     restart: always
 
   cloudflared:

@@ -1,7 +1,7 @@
 import streamlit as st
-from dotenv import load_dotenv
 import toml
-import ask_dcnc
+
+import ask_dcnc.client
 
 with open("pyproject.toml", "r", encoding="utf-8") as f:
     st.session_state.version = toml.load(f)["project"]["version"]
@@ -41,4 +41,4 @@ st.logo("static/images/rmit_university_logo_144p.png")
 
 pg.run()
 
-ask_dcnc.get_aws_keys()  # Obtain AWS keys first thing to speed up response time
+ask_dcnc.client.get_aws_keys()  # Obtain AWS keys first thing to speed up response time

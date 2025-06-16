@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ask-dcnc"
-version = "1.4.0"
+version = "1.4.1"
 description = "A chatbot that can answer questions about RMIT programs and courses using official program plans and course guides."
 readme = "readme.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 
 dependencies = [
     "streamlit~=1.45.1",
@@ -18,7 +18,8 @@ dependencies = [
     "langchain-community~=0.3.24",
     "toml~=0.10.2",
     "langgraph~=0.4.8",
-    "loguru~=0.7.3"
+    "loguru~=0.7.3",
+    "beautifulsoup4~=4.13.4"
 ]
 
 [tool.setuptools]

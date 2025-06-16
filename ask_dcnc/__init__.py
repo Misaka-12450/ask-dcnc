@@ -1,15 +1,15 @@
-from .session import (
-    get_agent,
-    get_aws_keys
-)
+import pathlib
 
-from .prompt import (
-    get_system_prompt
-)
+# Import environment if not in Docker
+if not pathlib.Path("/.dockerenv").exists():
+    from dotenv import load_dotenv
 
-from .ui import (
-    get_time_str,
-)
+    load_dotenv(override=False)
+
+from .agent import get_agent
+from .client import get_aws_keys
+from .prompt import get_system_prompt
+from .ui import get_time_str
 
 __all__ = [
     "get_agent",

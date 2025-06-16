@@ -4,13 +4,24 @@ Bedrock-related functions
 """
 
 import os
+import pathlib
 import boto3
 import streamlit as st
 from langchain_aws import ChatBedrock
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from langchain_community.agent_toolkits.openapi.toolkit import RequestsToolkit
+from langchain_community.utilities.requests import TextRequestsWrapper
 from langchain_community.utilities import SQLDatabase
 from langgraph.prebuilt import create_react_agent
 from loguru import logger
+
+# Load .env file if not running in Docker
+if not pathlib.Path("/.dockerenv").exists():
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+ALLOW_DANGEROUS_REQUEST = True  # For LangChain RequestsToolkit to visit the Internet
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 
@@ -29,10 +40,13 @@ BEDROCK_TOP_P = os.getenv("BEDROCK_TOP_P")
 BEDROCK_MAX_TOKENS = os.getenv("BEDROCK_MAX_TOKENS")
 
 
-# Cache AWS credentials using Cognito in Streamlit
-# Original authors: Cyrus Gao, extended by Xiang Li
 @st.cache_resource(ttl=45 * 60, show_spinner=False)
 def get_aws_keys() -> dict:
+    """
+    Obtain AWS credentials using Cognito and cache them in Streamlit
+    Original authors: Cyrus Gao, extended by Xiang Li
+    :return: Dictionary with AWS credentials
+    """
     idp_client = boto3.client("cognito-idp", region_name=AWS_REGION)
     response = idp_client.initiate_auth(
         AuthFlow="USER_PASSWORD_AUTH",
@@ -65,13 +79,17 @@ def get_aws_keys() -> dict:
     return creds
 
 
-# Bedrock Client
-# https://python.langchain.com/api_reference/aws/chat_models/langchain_aws.chat_models.bedrock.ChatBedrock.html
 @st.cache_resource(ttl=45 * 60, show_spinner=False)
 def client(
         llm_model: str,
         temperature: float,
 ) -> ChatBedrock:
+    """
+    Bedrock Client for LangChain cached in Streamlit
+    :param llm_model: Bedrock model ID
+    :param temperature: Temperature for the LLM
+    :return: ChatBedrock object
+    """
     credentials = get_aws_keys()
     try:
         llm = ChatBedrock(
@@ -95,34 +113,51 @@ def client(
         logger.error(f"Error loading LLM: {e}")
         if e.response["Error"]["Code"] == "ExpiredTokenException":
             get_aws_keys.clear()
-            llm = client(llm_model=llm_model, temperature=temperature, )
+            llm = client(llm_model=llm_model, temperature=temperature)
         else:
             raise
     return llm
 
 
+@st.cache_resource(show_spinner=False)
+def get_db(uri: str) -> SQLDatabase:
+    """
+    Instantiate a SQLDatabase object and cache it
+    :param uri: SQLAlchemy URI for the database
+    :return: SQLDatabase object
+    """
+    return SQLDatabase.from_uri(
+        uri,
+        max_string_length=6144)
+
+
 def get_agent(system_prompt: str):
+    """
+    Get the LangGraph ReAct agent
+    :param system_prompt: System prompt for the agent
+    :return: LangChain runnable for interactions
+    """
     llm = client(
         llm_model=st.session_state.llm_model,
-        temperature=st.session_state.llm_temperature,
+        temperature=st.session_state.llm_temperature
     )
 
-    db = SQLDatabase.from_uri(
-        SQLITE_URI,
-        max_string_length=6144, )
+    db = get_db(SQLITE_URI)
 
     tools = SQLDatabaseToolkit(
         db=db,
-        llm=llm,
-        verbose=True,
+        llm=llm
+    ).get_tools() + RequestsToolkit(
+        requests_wrapper=TextRequestsWrapper(headers={}),
+        allow_dangerous_requests=ALLOW_DANGEROUS_REQUEST
     ).get_tools()
 
-    logger.success("SQLDatabaseToolkit loaded.")
+    logger.success("LangChain toolkit loaded.")
     for tool in tools:
         logger.debug(f"Tool: {tool.name}, Description: {tool.description}")
 
     return create_react_agent(
         model=llm,
         tools=tools,
-        prompt=system_prompt,
+        prompt=system_prompt
     )

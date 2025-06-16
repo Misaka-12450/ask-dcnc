@@ -9,13 +9,6 @@ services:
       AWS_APP_CLIENT_ID: ${AWS_APP_CLIENT_ID}
       COGNITO_USERNAME: ${COGNITO_USERNAME}
       COGNITO_PASSWORD: ${COGNITO_PASSWORD}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USERNAME: ${MYSQL_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - app:/app
     restart: always
 
   cloudflared:
@@ -24,6 +17,3 @@ services:
     environment:
       CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
     restart: always
-
-volumes:
-  app:

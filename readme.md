@@ -102,11 +102,9 @@ You can access the app at:
 http://YOUR_IP_ADDRESS:8501
 ```
 
-#### Docker Compose with Cloudflare Tunnel
+#### Exposing AskDCNC to the Internet
 
-You can safely expose your app to the internet using a domain name without
-messing with port forwarding by using
-Cloudflare Tunnel.
+You can expose your app to the internet using a domain name without messing with port forwarding by using Cloudflare Tunnel.
 
 Read
 the [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
@@ -114,8 +112,8 @@ on how to set up your tunnel and get the token:
 
 > **Security Advice:** This application has not been thoroughly tested and is
 > unsuitable for public access.
-> In order to restrict access to your app, you should also hide your hostname
-> behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
+>
+> In order to restrict access to your app, you should also hide your hostname behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
 
 [Clone the repository](#clone-the-repository) and fill in the environment variables with your values. Then run Docker
 Compose:

@@ -1,5 +1,6 @@
 """
 pages/2_about.py
+Link to GitHub repository
 """
 
 import os

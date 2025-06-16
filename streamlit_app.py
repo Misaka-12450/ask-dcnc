@@ -1,13 +1,11 @@
 import streamlit as st
 from dotenv import load_dotenv
 import toml
+import ask_dcnc
 
 with open("pyproject.toml", "r", encoding="utf-8") as f:
     st.session_state.version = toml.load(f)["project"]["version"]
 __version__ = st.session_state.version
-
-load_dotenv()
-import ask_dcnc
 
 pg = st.navigation(
     [
@@ -31,7 +29,7 @@ SITE_TITLE = "AskDCNC"
 # https://github.com/streamlit/streamlit/issues/8960
 st.set_page_config(
     page_title=(
-        "About | " + SITE_TITLE if pg.title == "About"
+        f"{pg.title} | {SITE_TITLE}" if pg.title != SITE_TITLE
         else SITE_TITLE
     ),
     page_icon="static/images/favicon.png",

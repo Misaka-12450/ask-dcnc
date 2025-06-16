@@ -14,12 +14,6 @@ import sys
 
 __version__ = st.session_state.version
 
-# Load .env file if not running in Docker
-if not pathlib.Path("/.dockerenv").exists():
-    from dotenv import load_dotenv
-
-    load_dotenv()
-
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 
 logger.remove()

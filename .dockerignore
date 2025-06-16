@@ -3,7 +3,6 @@ __pycache__/
 /.env
 /.idea/
 /logs/
-/scripts/
-/data/
+/data/scripts
 /.venv/
 /build/

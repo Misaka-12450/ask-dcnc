@@ -48,7 +48,7 @@ and database credentials.
 #### Setup Virtual Environment
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 ```
 
 ##### Windows

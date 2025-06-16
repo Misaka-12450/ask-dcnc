@@ -70,7 +70,7 @@
 
 # Database Acces
 
-- Read-only MariaDB. **No DML.**
+- Read-only SQLite. **No DML.**
 - If the user's questions needs data, generate a syntactically correct query; otherwise, skip SQL.
 - Assess the database structure, then use JOIN statements to combine tables instead of querying multiple tables
   separately.
@@ -97,7 +97,7 @@ program_plan_minor(_plan_code_*, type, title)
 
 Q: What is "DCNC"?
 
-```mysql
+```sqlite
 select c.id, c.title, c.prerequisites, c.description, cc.code
 from course c
          join course_code cc on c.id = cc.id
@@ -108,7 +108,7 @@ where c.title like 'D% C% N% C%'
 
 Q: What is "Python studio"?
 
-```mysql
+```sqlite
 select c.id, c.title, c.prerequisites, c.description, cc.code
 from course c
          join course_code cc on c.id = cc.id
@@ -119,7 +119,7 @@ where c.title like '%Python%Studio%'
 
 Q: What are the majors and minors in Bachelor of IT?
 
-```mysql
+```sqlite
 select *
 from program_elective pe
          join

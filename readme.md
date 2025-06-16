@@ -30,13 +30,6 @@ courses using official program plans and course guides.
 
 You can run this chatbot locally with a [Python virtual environment](#run-with-python) or [Docker](#run-on-docker).
 
-Before you do that, you need to reconstruct the database.
-
-### 🗄️ Database Construction
-
-Create a MySQL or MariaDB database and import the `data/dcnc.sql` file in the repository. You will need to fill in the
-database connection details later.
-
 ### 🐍 Run with Python
 
 #### Clone the Repository
@@ -100,12 +93,7 @@ docker run ghcr.io/misaka-12450/ask-dcnc:latest \
   -e AWS_USER_POOL_ID='YOUR_AWS_USER_POOL_ID' \
   -e AWS_APP_CLIENT_ID='YOUR_AWS_APP_CLIENT_ID' \
   -e COGNITO_USERNAME='YOUR_COGNITO_USERNAME' \
-  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' \
-  -e MYSQL_HOST='YOUR_MYSQL_HOST' \
-  -e MYSQL_PORT='YOUR_MYSQL_PORT' \
-  -e MYSQL_DATABASE='YOUR_MYSQL_DATABASE' \
-  -e MYSQL_USERNAME='YOUR_MYSQL_USERNAME' \
-  -e MYSQL_PASSWORD='YOUR_MYSQL_PASSWORD'
+  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' 
 ```
 
 You can access the app at:

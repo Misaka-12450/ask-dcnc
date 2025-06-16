@@ -14,12 +14,7 @@ from loguru import logger
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 
-MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_PORT = os.getenv("MYSQL_PORT")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQL_USERNAME = os.getenv("MYSQL_USERNAME")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-MYSQL_URI = f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+SQLITE_URI = f"sqlite:///{BASE_DIR}/data/dcnc.sqlite"
 
 # Bedrock - Load environment from Docker env
 AWS_REGION = os.getenv("AWS_REGION")
@@ -113,7 +108,7 @@ def get_agent(system_prompt: str):
     )
 
     db = SQLDatabase.from_uri(
-        MYSQL_URI,
+        SQLITE_URI,
         max_string_length=6144, )
 
     tools = SQLDatabaseToolkit(

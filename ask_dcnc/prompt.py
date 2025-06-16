@@ -1,3 +1,7 @@
+"""
+ask_dcnc/prompt.py
+System prompt generator
+"""
 import os
 import streamlit as st
 from loguru import logger

@@ -30,13 +30,6 @@ courses using official program plans and course guides.
 
 You can run this chatbot locally with a [Python virtual environment](#run-with-python) or [Docker](#run-on-docker).
 
-Before you do that, you need to reconstruct the database.
-
-### 🗄️ Database Construction
-
-Create a MySQL or MariaDB database and import the `data/dcnc.sql` file in the repository. You will need to fill in the
-database connection details later.
-
 ### 🐍 Run with Python
 
 #### Clone the Repository
@@ -100,12 +93,7 @@ docker run ghcr.io/misaka-12450/ask-dcnc:latest \
   -e AWS_USER_POOL_ID='YOUR_AWS_USER_POOL_ID' \
   -e AWS_APP_CLIENT_ID='YOUR_AWS_APP_CLIENT_ID' \
   -e COGNITO_USERNAME='YOUR_COGNITO_USERNAME' \
-  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' \
-  -e MYSQL_HOST='YOUR_MYSQL_HOST' \
-  -e MYSQL_PORT='YOUR_MYSQL_PORT' \
-  -e MYSQL_DATABASE='YOUR_MYSQL_DATABASE' \
-  -e MYSQL_USERNAME='YOUR_MYSQL_USERNAME' \
-  -e MYSQL_PASSWORD='YOUR_MYSQL_PASSWORD'
+  -e COGNITO_PASSWORD='YOUR_COGNITO_USERNAME' 
 ```
 
 You can access the app at:
@@ -114,11 +102,9 @@ You can access the app at:
 http://YOUR_IP_ADDRESS:8501
 ```
 
-#### Docker Compose with Cloudflare Tunnel
+#### Exposing AskDCNC to the Internet
 
-You can safely expose your app to the internet using a domain name without
-messing with port forwarding by using
-Cloudflare Tunnel.
+You can expose your app to the internet using a domain name without messing with port forwarding by using Cloudflare Tunnel.
 
 Read
 the [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
@@ -126,8 +112,8 @@ on how to set up your tunnel and get the token:
 
 > **Security Advice:** This application has not been thoroughly tested and is
 > unsuitable for public access.
-> In order to restrict access to your app, you should also hide your hostname
-> behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
+>
+> In order to restrict access to your app, you should also hide your hostname behind [Cloudflare Zero Trust Access Policies](https://developers.cloudflare.com/cloudflare-one/applications/).
 
 [Clone the repository](#clone-the-repository) and fill in the environment variables with your values. Then run Docker
 Compose:

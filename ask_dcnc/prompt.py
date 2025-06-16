@@ -3,7 +3,9 @@ ask_dcnc/prompt.py
 System prompt generator
 """
 import os
+from datetime import datetime
 
+import pytz
 import streamlit as st
 from loguru import logger
 
@@ -20,7 +22,7 @@ def get_system_prompt() -> str:
         else:
             answer_style = "brief: You should summarise the answer into one or two short paragraphs."
 
-        prompt = system_prompt.format(answer_style=answer_style)
+        prompt = system_prompt.format(answer_style=answer_style, time=datetime.now(pytz.timezone(st.context.timezone)))
         logger.debug(f"System prompt loaded:\n{prompt}")
         return prompt
 

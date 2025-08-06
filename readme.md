@@ -3,13 +3,18 @@
 An Anthropic Claude chatbot that can answer questions about RMIT programs and
 courses using official program plans and course guides.
 
+If you have an RMIT staff or student email, you can access a hosted version of AskDCNC at [https://askdcnc.misaka-12450.com/](https://askdcnc.misaka-12450.com/)
+
+![UI](https://github.com/Misaka-12450/ask-dcnc/blob/master/docs/images/chat_ui.png)
+
 ## Features
 
-- Web chat interface using Streamlit chat
 - AWS Bedrock backend using Cognito for authentication
-- MariaDB database
-- Contextual memory provided by LangChain [Messages](https://python.langchain.com/docs/concepts/messages/)
-- [Langchain SQLDatabaseToolkit](https://langchain-ai.github.io/langgraph/tutorials/sql-agent) and [LangGraph ReAct Agent](https://langchain-ai.github.io/langgraph/reference/prebuilt/#langgraph.prebuilt.chat_agent_executor.create_react_agent)
+- Web chat interface using Streamlit chat
+- Contextual memory provided by LangChain [Messages](https://python.langchain.com/docs/concepts/messages/)  ![Chat history](https://github.com/Misaka-12450/ask-dcnc/blob/master/docs/images/chat_history.png)
+- Chain of thought reasoning with LangGraph [ReAct Agent](https://langchain-ai.github.io/langgraph/reference/prebuilt/#langgraph.prebuilt.chat_agent_executor.create_react_agent)  ![ReAct Agent](https://github.com/Misaka-12450/ask-dcnc/blob/master/docs/images/react_agent.png)
+- SQL database access using LangChain [SQLDatabaseToolkit](https://langchain-ai.github.io/langgraph/tutorials/sql-agent)
+- Access to RMIT website using LangChain [Requests Toolkit](https://python.langchain.com/docs/integrations/tools/requests/)  ![Online Access](https://github.com/Misaka-12450/ask-dcnc/blob/master/docs/images/online_access.png)
 - Dynamic system prompt features
 
 ### Programs

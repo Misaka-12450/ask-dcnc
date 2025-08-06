@@ -3,7 +3,7 @@
 An Anthropic Claude chatbot that can answer questions about RMIT programs and
 courses using official program plans and course guides.
 
-If you have an RMIT staff or student email, you can access a hosted version of AskDCNC at [https://askdcnc.misaka-12450.com/](https://askdcnc.misaka-12450.com/)
+If you have an RMIT staff or student email, you can access a hosted version of AskDCNC at [https://askdcnc.misaka-12450.com/](https://askdcnc.misaka-12450.com/). When prompted to sign in, please select "Get a login code emailed to you" and use your RMIT email address.
 
 ![UI](https://github.com/Misaka-12450/ask-dcnc/blob/master/docs/images/chat_ui.png)
 
